@@ -1,0 +1,85 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  font-family: 'PT Sans', sans-serif;
+}
+
+@layer base {
+  :root {
+    --background: 222.9 39.3% 95.5%;
+    --foreground: 224 71.4% 4.1%;
+    --card: 222.9 39.3% 100%;
+    --card-foreground: 224 71.4% 4.1%;
+    --popover: 222.9 39.3% 100%;
+    --popover-foreground: 224 71.4% 4.1%;
+    --primary: 221.2 83.2% 53.3%;
+    --primary-foreground: 210 20% 98%;
+    --secondary: 215 27.9% 90.8%;
+    --secondary-foreground: 224 71.4% 4.1%;
+    --muted: 215 27.9% 90.8%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 215 27.9% 80.8%;
+    --accent-foreground: 224 71.4% 4.1%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 20% 98%;
+    --border: 215 20.2% 65.1%;
+    --input: 215 20.2% 65.1%;
+    --ring: 221.2 83.2% 53.3%;
+    --radius: 0.5rem;
+
+    /* Custom App Colors */
+    --background: 225 50% 98%; /* #F0F2FA */
+    --foreground: 224 71.4% 4.1%; /* Near black for text */
+    --primary: 236 45% 50%; /* #3F51B5 */
+    --primary-foreground: 210 20% 98%;
+    --accent: 235 15% 56%; /* #5C6BC0 */
+    --accent-foreground: 210 20% 98%;
+
+  }
+
+  .dark {
+    --background: 224 71.4% 4.1%;
+    --foreground: 210 20% 98%;
+    --card: 224 71.4% 4.1%;
+    --card-foreground: 210 20% 98%;
+    --popover: 224 71.4% 4.1%;
+    --popover-foreground: 210 20% 98%;
+    --primary: 221.2 83.2% 53.3%;
+    --primary-foreground: 210 20% 98%;
+    --secondary: 215 27.9% 15.8%;
+    --secondary-foreground: 210 20% 98%;
+    --muted: 215 27.9% 15.8%;
+    --muted-foreground: 217.9 10.6% 64.9%;
+    --accent: 215 27.9% 25.8%;
+    --accent-foreground: 210 20% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 20% 98%;
+    --border: 215 27.9% 15.8%;
+    --input: 215 27.9% 15.8%;
+    --ring: 221.2 83.2% 53.3%;
+
+    /* Custom App Colors */
+    --background: 225 50% 10%; /* Darker blue background */
+    --foreground: 225 50% 98%; /* Light text */
+    --primary: 236 45% 60%; /* Lighter #3F51B5 for dark mode */
+    --primary-foreground: 225 50% 98%;
+    --accent: 235 15% 66%; /* Lighter #5C6BC0 for dark mode */
+    --accent-foreground: 225 50% 98%;
+    --card: 225 50% 15%;
+    --card-foreground: 225 50% 98%;
+    --border: 225 50% 25%;
+    --input: 225 50% 25%;
+    --muted-foreground: 225 50% 65%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
