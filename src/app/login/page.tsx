@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { useAuth } from "@/hooks/use-auth";
+import { useAuth } from "@/providers/auth-provider";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -39,7 +39,7 @@ export default function LoginPage() {
   const onSubmit = async (values: SignInForm) => {
     setLoading(true);
     try {
-      await signIn(values);
+      await signIn(values.email, values.password);
        toast({
         title: "Login Successful",
         description: "Welcome back!",
@@ -107,6 +107,21 @@ export default function LoginPage() {
           <Link href="/signup" className="underline text-primary">
             Sign up
           </Link>
+          <div className="mt-4 pt-3 border-t border-gray-200 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-4">
+            <div className="flex items-center justify-center mb-2">
+              <span className="text-2xl mr-2">🛠️</span>
+              <p className="text-gray-700 font-medium">Are you a tech?</p>
+            </div>
+            <Link 
+              href="/tech/login" 
+              className="inline-block w-full px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors duration-200 font-medium no-underline"
+            >
+              Tech Access
+            </Link>
+            <p className="text-xs text-gray-500 mt-2">
+              Technical staff login for management
+            </p>
+          </div>
         </div>
       </Card>
     </div>

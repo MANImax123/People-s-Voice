@@ -83,3 +83,68 @@ body {
     @apply bg-background text-foreground;
   }
 }
+
+/* Custom Header Animations and Effects */
+@layer components {
+  .header-gradient {
+    background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 25%, #3730a3 75%, #312e81 100%);
+    position: relative;
+  }
+  
+  .header-gradient::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(99, 102, 241, 0.1) 100%);
+    pointer-events: none;
+  }
+  
+  .logo-glow {
+    filter: drop-shadow(0 0 10px rgba(251, 191, 36, 0.3));
+  }
+  
+  .nav-item-active {
+    position: relative;
+  }
+  
+  .nav-item-active::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, #fbbf24, transparent);
+    border-radius: 1px;
+  }
+  
+  .backdrop-blur-header {
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
+  
+  .text-gradient {
+    background: linear-gradient(135deg, #ffffff 0%, #e0e7ff 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  
+  .hover-scale {
+    transition: transform 0.2s ease-in-out;
+  }
+  
+  .hover-scale:hover {
+    transform: scale(1.05);
+  }
+  
+  .glass-effect {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+  }
+}

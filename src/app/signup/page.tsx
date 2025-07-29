@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { useAuth } from "@/hooks/use-auth";
+import { useAuth } from "@/providers/auth-provider";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -15,12 +15,9 @@ import { Label } from "@/components/ui/label";
 import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
-import { type SignUpForm } from "@/types/auth";
+import { SignUpSchema, type SignUpForm } from "@/types/auth";
 
-const formSchema = z.object({
-  email: z.string().email({ message: "Invalid email address." }),
-  password: z.string().min(6, { message: "Password must be at least 6 characters." }),
-});
+const formSchema = SignUpSchema;
 
 export default function SignupPage() {
   const { signUp } = useAuth();
@@ -28,10 +25,12 @@ export default function SignupPage() {
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
 
-  const form = useForm<z.infer<typeof formSchema>>({
+  const form = useForm<SignUpForm>({
     resolver: zodResolver(formSchema),
     defaultValues: {
+      name: "",
       email: "",
+      phoneNumber: "",
       password: "",
     },
   });
@@ -39,7 +38,7 @@ export default function SignupPage() {
   const onSubmit = async (values: SignUpForm) => {
     setLoading(true);
     try {
-      await signUp(values);
+      await signUp(values.name, values.email, values.phoneNumber, values.password);
       toast({
         title: "Account Created",
         description: "You have successfully signed up!",
@@ -69,12 +68,25 @@ export default function SignupPage() {
         <CardHeader>
           <CardTitle className="text-2xl font-headline">Sign Up</CardTitle>
           <CardDescription>
-            Create an account to start reporting issues.
+            Create an account to join your community.
           </CardDescription>
         </CardHeader>
         <CardContent>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-4">
+              <FormField
+                control={form.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem>
+                    <Label htmlFor="name">Full Name</Label>
+                    <FormControl>
+                      <Input id="name" type="text" placeholder="John Doe" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
               <FormField
                 control={form.control}
                 name="email"
@@ -83,6 +95,19 @@ export default function SignupPage() {
                     <Label htmlFor="email">Email</Label>
                     <FormControl>
                       <Input id="email" type="email" placeholder="m@example.com" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="phoneNumber"
+                render={({ field }) => (
+                  <FormItem>
+                    <Label htmlFor="phoneNumber">Phone Number</Label>
+                    <FormControl>
+                      <Input id="phoneNumber" type="tel" placeholder="+1 (555) 123-4567" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
