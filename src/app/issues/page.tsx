@@ -344,28 +344,33 @@ export default function IssuesPage() {
                           {/* Reporter Info */}
                           <div className="mb-4">
                             <p className="text-sm text-gray-600">
-                              Reported by: <span className="font-medium">{issue.reportedBy.name}</span>
-                            </p>
-                            <p className="text-sm text-gray-500">
-                              {new Date(issue.reportedAt).toLocaleDateString('en-IN', {
+                              Reported by: {issue.reportedBy.name} on{' '}
+                              {new Date(issue.reportedAt || Date.now()).toLocaleString('en-IN', {
                                 year: 'numeric',
                                 month: 'long',
                                 day: 'numeric',
-                                hour: '2-digit',
-                                minute: '2-digit'
+                                hour: 'numeric',
+                                minute: '2-digit',
+                                hour12: true,
+                                timeZone: 'Asia/Kolkata'
                               })}
+                            </p>
+                            <p className="text-xs text-gray-500">
+                              Contact: {issue.reportedBy.email} • {issue.reportedBy.phone || 'N/A'}
                             </p>
                           </div>
 
                           {/* Assigned Tech */}
-                          {issue.assignedTo && (
+                          {issue.assignedTo?.name ? (
                             <div className="mb-4">
                               <p className="text-sm text-gray-600">
                                 Assigned to: <span className="font-medium text-blue-600">{issue.assignedTo.name}</span>
-                                <span className="text-gray-500"> ({issue.assignedTo.specialization})</span>
+                                {issue.assignedTo.specialization && (
+                                  <span className="text-gray-500"> ({issue.assignedTo.specialization})</span>
+                                )}
                               </p>
                             </div>
-                          )}
+                          ) : null}
 
                           {/* AI Analysis */}
                           {issue.aiAnalysis && (

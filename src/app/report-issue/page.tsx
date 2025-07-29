@@ -1,9 +1,11 @@
 "use client";
-
+const ASSEMBLY_AI_API_KEY = "c6f0ee01ffa1431ab158cfa085826ee1"; // <-- Put your API key here
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { metropolitanCities, issueCategories } from "@/lib/civic-data";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 
 interface FormData {
   title: string;
@@ -122,10 +124,17 @@ export default function ReportIssue() {
         });
       }
 
-      // Submit the issue
+      // Submit the issue with current timestamp
+      const now = new Date();
       const issueData = {
         ...formData,
-        photos: base64Photos
+        photos: base64Photos,
+        reportedAt: now.toISOString(), // Current date in ISO format
+        reportedBy: {
+          name: formData.reporterName,
+          email: formData.reporterEmail,
+          phone: formData.reporterPhone
+        }
       };
 
       const response = await fetch('/api/issues/report', {
@@ -180,6 +189,9 @@ export default function ReportIssue() {
 
   const availableAreas = formData.metropolitanCity ? 
     metropolitanCities[formData.metropolitanCity as keyof typeof metropolitanCities] || [] : [];
+
+  // Add your AssemblyAI API key here
+  const ASSEMBLY_AI_API_KEY = "YOUR_ASSEMBLYAI_API_KEY_HERE"; // <-- Put your API key here
 
   if (success) {
     return (
@@ -289,7 +301,7 @@ export default function ReportIssue() {
                 <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-2">
                   Issue Title *
                 </label>
-                <input
+                <Input
                   id="title"
                   type="text"
                   name="title"
@@ -297,6 +309,8 @@ export default function ReportIssue() {
                   onChange={handleInputChange}
                   placeholder="Brief description of the issue"
                   required
+                  enableVoice
+                  language="en-IN"
                   className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
@@ -339,7 +353,7 @@ export default function ReportIssue() {
                 <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-2">
                   Detailed Description *
                 </label>
-                <textarea
+                <Textarea
                   id="description"
                   name="description"
                   value={formData.description}
@@ -347,6 +361,8 @@ export default function ReportIssue() {
                   placeholder="Provide detailed information about the issue..."
                   required
                   rows={4}
+                  enableVoice
+                  language="en-IN"
                   className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
@@ -403,7 +419,7 @@ export default function ReportIssue() {
                 <label htmlFor="exactAddress" className="block text-sm font-medium text-gray-700 mb-2">
                   Exact Address/Landmark *
                 </label>
-                <input
+                <Input
                   id="exactAddress"
                   type="text"
                   name="exactAddress"
@@ -465,7 +481,7 @@ export default function ReportIssue() {
                   <label htmlFor="reporterName" className="block text-sm font-medium text-gray-700 mb-2">
                     Your Name *
                   </label>
-                  <input
+                  <Input
                     id="reporterName"
                     type="text"
                     name="reporterName"
@@ -480,7 +496,7 @@ export default function ReportIssue() {
                   <label htmlFor="reporterEmail" className="block text-sm font-medium text-gray-700 mb-2">
                     Email Address *
                   </label>
-                  <input
+                  <Input
                     id="reporterEmail"
                     type="email"
                     name="reporterEmail"
@@ -495,7 +511,7 @@ export default function ReportIssue() {
                   <label htmlFor="reporterPhone" className="block text-sm font-medium text-gray-700 mb-2">
                     Phone Number *
                   </label>
-                  <input
+                  <Input
                     id="reporterPhone"
                     type="tel"
                     name="reporterPhone"
