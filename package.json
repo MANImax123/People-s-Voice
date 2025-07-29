@@ -10,6 +10,7 @@
         "typecheck": "tsc --noEmit"
     },
     "dependencies": {
+        "@emailjs/nodejs": "^5.0.2",
         "@genkit-ai/googleai": "^1.14.1",
         "@genkit-ai/next": "^1.14.1",
         "@google/generative-ai": "^0.24.1",
@@ -52,6 +53,7 @@
         "next": "15.3.3",
         "nodemailer": "^7.0.5",
         "patch-package": "^8.0.0",
+        "razorpay": "^2.9.6",
         "react": "^18.3.1",
         "react-day-picker": "^8.10.1",
         "react-dom": "^18.3.1",

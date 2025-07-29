@@ -3,6 +3,7 @@ import connectDB from '@/lib/mongodb';
 import { sendIssueResolvedEmail } from '@/lib/email';
 import { sendIssueResolvedEmailResend } from '@/lib/email-resend';
 import { sendIssueResolvedWebhook, sendIssueResolvedSimple } from '@/lib/email-webhook';
+import { sendIssueResolvedEmailJS, sendEmailViaWebhook } from '@/lib/email-emailjs';
 
 export async function PATCH(
   request: NextRequest,
@@ -28,12 +29,18 @@ export async function PATCH(
     }
 
     // Find and update the issue
+    const updateData: any = { status };
+    
+    if (status === 'resolved') {
+      updateData.resolvedAt = new Date();
+    } else if (status === 'reported') {
+      // Clear resolvedAt when marking as not resolved
+      updateData.resolvedAt = null;
+    }
+
     const updatedIssue = await Issue.findByIdAndUpdate(
       issueId,
-      { 
-        status,
-        ...(status === 'resolved' && { resolvedAt: new Date() })
-      },
+      updateData,
       { new: true }
     );
 
@@ -52,7 +59,8 @@ export async function PATCH(
       console.log('   - Issue Title:', updatedIssue.title);
       console.log('   - Reported By Name:', updatedIssue.reportedBy.name);
       console.log('   - Reported By Email:', updatedIssue.reportedBy.email);
-      console.log('   - This email will be sent to the USER who reported the issue, NOT the tech');
+      console.log('   - 🎯 EMAIL WILL BE SENT TO THE USER WHO REPORTED THE ISSUE');
+      console.log('   - 🚫 EMAIL WILL NOT BE SENT TO THE TECH WHO RESOLVED IT');
       
       try {
         // Method 1: Try Resend (most reliable)
@@ -66,33 +74,38 @@ export async function PATCH(
         if (resendResult.success && !resendResult.testMode) {
           console.log('✅ Email sent successfully via Resend');
         } else {
-          console.log('📧 Trying Method 2: Gmail');
-          // Method 2: Try Gmail as backup
-          const gmailResult = await sendIssueResolvedEmail(
+          console.log('📧 Trying Method 2: EmailJS');
+          // Method 2: Try EmailJS
+          const emailjsResult = await sendIssueResolvedEmailJS(
             updatedIssue.reportedBy.email,
             updatedIssue.title,
             issueId
           );
 
-          if (gmailResult.success && !gmailResult.testMode) {
-            console.log('✅ Email sent successfully via Gmail');
+          if (emailjsResult.success && !emailjsResult.testMode) {
+            console.log('✅ Email sent successfully via EmailJS');
           } else {
-            console.log('📧 Trying Method 3: Webhook/Console');
-            // Method 3: Webhook/Console notification (always works)
-            const webhookResult = await sendIssueResolvedWebhook(
+            console.log('📧 Trying Method 3: Gmail');
+            // Method 3: Try Gmail as backup
+            const gmailResult = await sendIssueResolvedEmail(
               updatedIssue.reportedBy.email,
               updatedIssue.title,
               issueId
             );
 
-            // Method 4: Simple console notification (guaranteed to work)
-            const simpleResult = await sendIssueResolvedSimple(
-              updatedIssue.reportedBy.email,
-              updatedIssue.title,
-              issueId
-            );
+            if (gmailResult.success && !gmailResult.testMode) {
+              console.log('✅ Email sent successfully via Gmail');
+            } else {
+              console.log('📧 Trying Method 4: Console');
+              // Method 4: Console notification (always works)
+              const simpleResult = await sendIssueResolvedSimple(
+                updatedIssue.reportedBy.email,
+                updatedIssue.title,
+                issueId
+              );
 
-            console.log('✅ Notification completed via console methods');
+              console.log('✅ Notification completed via console method');
+            }
           }
         }
       } catch (emailError) {

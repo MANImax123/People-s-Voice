@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { useAuth } from "@/providers/auth-provider";
 import { metropolitanCities, issueCategories } from "@/lib/civic-data";
 
 interface Issue {
@@ -57,6 +58,7 @@ interface Pagination {
 }
 
 export default function IssuesPage() {
+  const { user } = useAuth(); // Get current authenticated user
   const [issues, setIssues] = useState<Issue[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -75,6 +77,11 @@ export default function IssuesPage() {
     try {
       setLoading(true);
       const params = new URLSearchParams();
+      
+      // Add user email to filter issues by current user
+      if (user?.email) {
+        params.append('userEmail', user.email);
+      }
       
       Object.entries(filters).forEach(([key, value]) => {
         if (value !== "all") {
@@ -100,8 +107,11 @@ export default function IssuesPage() {
   };
 
   useEffect(() => {
-    fetchIssues();
-  }, [filters]);
+    // Only fetch issues when user is loaded
+    if (user) {
+      fetchIssues();
+    }
+  }, [filters, user]);
 
   const handleFilterChange = (key: string, value: string) => {
     setFilters(prev => ({
@@ -160,28 +170,49 @@ export default function IssuesPage() {
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-7xl mx-auto px-4">
-        {/* Header */}
-        <div className="bg-white rounded-xl shadow-lg overflow-hidden mb-8">
-          <div className="bg-gradient-to-r from-blue-600 to-blue-700 px-8 py-6">
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between">
-              <div>
-                <h1 className="text-3xl font-bold text-white flex items-center">
-                  <span className="text-4xl mr-3">🏛️</span>
-                  Civic Issues Dashboard
-                </h1>
-                <p className="text-blue-100 mt-2">
-                  Track and monitor civic issues in your community
-                </p>
-              </div>
-              <Link
-                href="/report-issue"
-                className="mt-4 md:mt-0 bg-white text-blue-600 px-6 py-3 rounded-lg font-semibold hover:bg-blue-50 transition-colors inline-flex items-center"
-              >
-                <span className="mr-2">📝</span>
-                Report New Issue
-              </Link>
-            </div>
+        {/* Check if user is authenticated */}
+        {!user ? (
+          <div className="bg-white rounded-xl shadow-lg p-8 text-center">
+            <h1 className="text-2xl font-bold text-gray-800 mb-4">
+              🔒 Please Login to View Your Issues
+            </h1>
+            <p className="text-gray-600 mb-6">
+              You need to be logged in to view your reported issues.
+            </p>
+            <Link
+              href="/login"
+              className="bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
+            >
+              Login to Continue
+            </Link>
           </div>
+        ) : (
+          <>
+            {/* Header */}
+            <div className="bg-white rounded-xl shadow-lg overflow-hidden mb-8">
+              <div className="bg-gradient-to-r from-blue-600 to-blue-700 px-8 py-6">
+                <div className="flex flex-col md:flex-row md:items-center md:justify-between">
+                  <div>
+                    <h1 className="text-3xl font-bold text-white flex items-center">
+                      <span className="text-4xl mr-3">🏛️</span>
+                      My Civic Issues
+                    </h1>
+                    <p className="text-blue-100 mt-2">
+                      Track and monitor your reported civic issues
+                    </p>
+                    <p className="text-blue-200 mt-1 text-sm">
+                      Logged in as: {user.email}
+                    </p>
+                  </div>
+                  <Link
+                    href="/report-issue"
+                    className="mt-4 md:mt-0 bg-white text-blue-600 px-6 py-3 rounded-lg font-semibold hover:bg-blue-50 transition-colors inline-flex items-center"
+                  >
+                    <span className="mr-2">📝</span>
+                    Report New Issue
+                  </Link>
+                </div>
+              </div>
 
           {/* Filters */}
           <div className="p-6 border-b">
@@ -461,6 +492,8 @@ export default function IssuesPage() {
               </div>
             )}
           </div>
+        )}
+        </>
         )}
       </div>
     </div>

@@ -120,18 +120,57 @@ const IssueFullSchema = new mongoose.Schema({
       required: true
     }
   },
-  // Add the references - this might be the issue
+  // Assignment and management fields
   assignedTo: {
     techId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Tech',
       default: null
     },
+    techName: {
+      type: String,
+      default: null
+    },
+    techEmail: {
+      type: String,
+      default: null
+    },
     assignedAt: {
       type: Date,
       default: null
+    },
+    assignedBy: {
+      adminId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Admin',
+        default: null
+      },
+      adminName: {
+        type: String,
+        default: null
+      }
     }
   },
+  assignmentHistory: [{
+    techId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Tech'
+    },
+    techName: String,
+    assignedBy: {
+      adminId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Admin'
+      },
+      adminName: String
+    },
+    assignedAt: Date,
+    unassignedAt: {
+      type: Date,
+      default: null
+    },
+    reason: String
+  }],
   resolvedAt: {
     type: Date,
     default: null

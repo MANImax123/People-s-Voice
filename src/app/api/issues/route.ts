@@ -19,11 +19,18 @@ export async function GET(request: NextRequest) {
     const category = searchParams.get('category');
     const city = searchParams.get('city');
     const priority = searchParams.get('priority');
+    const userEmail = searchParams.get('userEmail'); // Filter by user email
     const page = parseInt(searchParams.get('page') || '1');
     const limit = parseInt(searchParams.get('limit') || '20');
     
     // Build filter object
     const filter: any = {};
+    
+    // Filter by user email if provided (for user-specific issues)
+    if (userEmail) {
+      filter['reportedBy.email'] = userEmail;
+      console.log('Filtering issues for user:', userEmail);
+    }
     
     if (status && status !== 'all') {
       filter.status = status;

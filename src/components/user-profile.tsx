@@ -7,22 +7,44 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { getIssues } from "@/lib/issues";
+import { useAuth } from "@/providers/auth-provider";
 
-const MOCK_USER_ID = "user-123";
+interface Issue {
+  _id: string;
+  title: string;
+  category: string;
+  status: string;
+  createdAt: string;
+  upvotes?: number;
+  description: string;
+  location: {
+    area: string;
+    metropolitanCity: string;
+  };
+}
 
 export default function UserProfile() {
-  const [myIssues, setMyIssues] = useState([]);
+  const [myIssues, setMyIssues] = useState<Issue[]>([]);
   const [loadingIssues, setLoadingIssues] = useState(true);
   const { toast } = useToast();
+  const { user } = useAuth();
 
   useEffect(() => {
     const fetchMyIssues = async () => {
+      if (!user?.email) {
+        setLoadingIssues(false);
+        return;
+      }
+
       try {
         setLoadingIssues(true);
-        const allIssues = await getIssues();
-        const userIssues = allIssues.filter(issue => issue.userId === MOCK_USER_ID);
-        setMyIssues(userIssues);
+        const response = await fetch(`/api/issues?userEmail=${encodeURIComponent(user.email)}`);
+        if (response.ok) {
+          const data = await response.json();
+          setMyIssues(data.issues || []);
+        } else {
+          throw new Error('Failed to fetch issues');
+        }
       } catch (error) {
         console.error("Failed to fetch user issues:", error);
         toast({
@@ -35,7 +57,7 @@ export default function UserProfile() {
       }
     };
     fetchMyIssues();
-  }, [toast]);
+  }, [toast, user]);
 
   return (
     <div className="container mx-auto py-8">
@@ -51,19 +73,21 @@ export default function UserProfile() {
               <Table>
                 <TableHeader>
                   <TableRow>
+                    <TableHead>Title</TableHead>
                     <TableHead>Category</TableHead>
                     <TableHead>Status</TableHead>
+                    <TableHead>Location</TableHead>
                     <TableHead>Date Reported</TableHead>
-                    <TableHead>Upvotes</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {myIssues.map(issue => (
-                    <TableRow key={issue.id}>
-                      <TableCell>{issue.category}</TableCell>
-                      <TableCell><Badge>{issue.status}</Badge></TableCell>
+                    <TableRow key={issue._id}>
+                      <TableCell className="font-medium">{issue.title}</TableCell>
+                      <TableCell className="capitalize">{issue.category?.replace('-', ' ')}</TableCell>
+                      <TableCell><Badge variant="outline" className="capitalize">{issue.status}</Badge></TableCell>
+                      <TableCell>{issue.location?.area}, {issue.location?.metropolitanCity}</TableCell>
                       <TableCell>{new Date(issue.createdAt).toLocaleDateString()}</TableCell>
-                      <TableCell>{issue.upvotes}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>

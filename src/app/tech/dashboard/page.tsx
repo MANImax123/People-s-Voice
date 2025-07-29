@@ -68,8 +68,18 @@ export default function TechDashboard() {
       if (response.ok) {
         const data = await response.json();
         const allIssues = data.issues || [];
-        setIssues(allIssues);
-        calculateStats(allIssues);
+        
+        // Filter to show only issues assigned to this tech
+        const techId = tech?._id || tech?.id;
+        const assignedIssues = allIssues.filter((issue: any) => 
+          issue.assignedTo?.techId === techId || 
+          issue.assignedTo?.techEmail === tech?.email
+        );
+        
+        setIssues(assignedIssues);
+        calculateStats(assignedIssues);
+        
+        console.log(`Tech ${tech?.name} has ${assignedIssues.length} assigned issues out of ${allIssues.length} total issues`);
       } else {
         console.error('Failed to load issues');
       }
@@ -404,14 +414,16 @@ export default function TechDashboard() {
                                 Start Work
                               </Button>
                             )}
-                            <Button
-                              size="sm"
-                              variant="default"
-                              className="bg-green-600 hover:bg-green-700"
-                              onClick={() => updateIssueStatus(issue._id, 'resolved')}
-                            >
-                              ✅ Resolve
-                            </Button>
+                            {issue.status !== 'resolved' && (
+                              <Button
+                                size="sm"
+                                variant="default"
+                                className="bg-green-600 hover:bg-green-700"
+                                onClick={() => updateIssueStatus(issue._id, 'resolved')}
+                              >
+                                ✅ Resolve
+                              </Button>
+                            )}
                           </div>
                         </div>
                       </div>
@@ -448,11 +460,21 @@ export default function TechDashboard() {
                         </div>
                       </div>
                       <p className="text-gray-700 mb-3">{issue.description}</p>
-                      <div className="flex justify-between items-center text-sm text-green-600">
+                      <div className="flex justify-between items-center text-sm text-green-600 mb-3">
                         <span>Reported: {new Date(issue.createdAt).toLocaleDateString()}</span>
                         <span className="font-medium">
                           ✅ Resolved: {issue.resolvedAt ? new Date(issue.resolvedAt).toLocaleDateString() : 'Recently'}
                         </span>
+                      </div>
+                      <div className="flex justify-end">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="border-orange-500 text-orange-600 hover:bg-orange-50"
+                          onClick={() => updateIssueStatus(issue._id, 'reported')}
+                        >
+                          🔄 Mark as Not Resolved
+                        </Button>
                       </div>
                     </div>
                   ))}

@@ -7,7 +7,7 @@ export interface User {
   name: string;
   email: string | null;
   phoneNumber: string;
-  role: 'user' | 'tech';
+  role: 'user' | 'tech' | 'admin';
   displayName?: string | null;
 }
 
@@ -16,6 +16,7 @@ interface AuthContextType {
   loading: boolean;
   signIn: (email: string, password: string) => Promise<void>;
   signUp: (name: string, email: string, phoneNumber: string, password: string) => Promise<void>;
+  adminLogin: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
   resetPassword: (email: string) => Promise<void>;
 }
@@ -110,6 +111,50 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
   };
 
+  const adminLogin = async (email: string, password: string) => {
+    try {
+      setLoading(true);
+      
+      const response = await fetch('/api/admin/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Admin login failed');
+      }
+
+      // Convert admin data to User format
+      const user: User = {
+        uid: data.admin._id,
+        name: data.admin.name,
+        email: data.admin.email,
+        phoneNumber: data.admin.phone || '',
+        role: 'admin',
+        displayName: data.admin.name,
+      };
+      
+      setUser(user);
+      localStorage.setItem('auth-user', JSON.stringify(user));
+      
+      // Also store admin auth for dashboard compatibility
+      localStorage.setItem('adminAuth', JSON.stringify({
+        admin: data.admin,
+        loginTime: new Date().toISOString()
+      }));
+      
+    } catch (error) {
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const logout = async () => {
     try {
       setLoading(true);
@@ -163,6 +208,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     loading,
     signIn,
     signUp,
+    adminLogin,
     logout,
     resetPassword,
   };

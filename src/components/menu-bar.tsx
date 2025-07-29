@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Lightbulb, LogOut, User, Menu, X, MapPin, Vote, Settings } from "lucide-react";
+import { Lightbulb, LogOut, User, Menu, X, MapPin, Vote, Settings, CreditCard, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/providers/auth-provider";
 import { useToast } from "@/hooks/use-toast";
@@ -39,12 +39,17 @@ export default function MenuBar() {
   const navigationItems = [
     { href: "/", label: "Dashboard", icon: <Lightbulb className="w-4 h-4" /> },
     { href: "/directory", label: "Directory", icon: <MapPin className="w-4 h-4" /> },
+    { href: "/payments", label: "Payments", icon: <CreditCard className="w-4 h-4" /> },
     { href: "/voting", label: "Voting", icon: <Vote className="w-4 h-4" /> },
   ];
 
   const techItems = [
     { href: "/tech", label: "Tech", icon: <Settings className="w-4 h-4" /> },
   ];
+
+  const adminItems = user?.role === 'admin' 
+    ? [{ href: "/admin/dashboard", label: "Admin Dashboard", icon: <Shield className="w-4 h-4" /> }]
+    : [{ href: "/admin/signup", label: "Admin", icon: <Shield className="w-4 h-4" /> }];
 
   return (
     <header className="bg-gradient-to-r from-blue-900 via-blue-800 to-indigo-900 text-white shadow-lg border-b border-blue-700">
@@ -69,7 +74,8 @@ export default function MenuBar() {
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-1">
-            {navigationItems.map((item) => (
+            {/* User Navigation - Only show for regular users */}
+            {(!user || user.role === 'user') && navigationItems.map((item) => (
               <Link
                 key={item.href}
                 href={item.href}
@@ -84,7 +90,7 @@ export default function MenuBar() {
               </Link>
             ))}
             
-            {/* Tech Navigation */}
+            {/* Tech Navigation - Only show for tech users */}
             {user?.role === 'tech' && techItems.map((item) => (
               <Link
                 key={item.href}
@@ -93,6 +99,22 @@ export default function MenuBar() {
                   isActivePath(item.href)
                     ? 'bg-green-500/30 text-white font-semibold'
                     : 'text-green-200 hover:text-white'
+                }`}
+              >
+                {item.icon}
+                <span className="font-medium">{item.label}</span>
+              </Link>
+            ))}
+            
+            {/* Admin Navigation - Show for non-logged in users and admin users */}
+            {(!user || user.role === 'admin') && adminItems.map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-200 hover:bg-purple-500/20 ${
+                  isActivePath(item.href) || pathname?.startsWith('/admin')
+                    ? 'bg-purple-500/30 text-white font-semibold'
+                    : 'text-purple-200 hover:text-white'
                 }`}
               >
                 {item.icon}
@@ -168,7 +190,8 @@ export default function MenuBar() {
         {isMobileMenuOpen && (
           <div className="md:hidden border-t border-blue-700 py-4">
             <div className="flex flex-col space-y-2">
-              {navigationItems.map((item) => (
+              {/* User Navigation - Only show for regular users */}
+              {(!user || user.role === 'user') && navigationItems.map((item) => (
                 <Link
                   key={item.href}
                   href={item.href}
@@ -184,12 +207,30 @@ export default function MenuBar() {
                 </Link>
               ))}
               
+              {/* Tech Navigation - Only show for tech users */}
               {user?.role === 'tech' && techItems.map((item) => (
                 <Link
                   key={item.href}
                   href={item.href}
                   onClick={() => setIsMobileMenuOpen(false)}
                   className="flex items-center gap-3 px-4 py-3 rounded-lg text-green-200 hover:bg-green-500/20 hover:text-white transition-all duration-200"
+                >
+                  {item.icon}
+                  <span>{item.label}</span>
+                </Link>
+              ))}
+
+              {/* Admin Navigation - Show for non-logged in users and admin users */}
+              {(!user || user.role === 'admin') && adminItems.map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 ${
+                    isActivePath(item.href) || pathname?.startsWith('/admin')
+                      ? 'bg-purple-500/30 text-white font-semibold'
+                      : 'text-purple-200 hover:bg-purple-500/20 hover:text-white'
+                  }`}
                 >
                   {item.icon}
                   <span>{item.label}</span>
