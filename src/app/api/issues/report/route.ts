@@ -11,6 +11,9 @@ export async function POST(request: NextRequest) {
     
     const data = await request.json();
     
+    // Ensure we have a valid date
+    const now = new Date().toISOString();
+    
     // Validate required fields (removed priority from required fields)
     const requiredFields = [
       'title', 'description', 'category',
@@ -104,7 +107,8 @@ export async function POST(request: NextRequest) {
         phone: data.reporterPhone
       },
       status: 'reported',
-      reportedAt: new Date()
+      reportedAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
     });
 
     const savedIssue = await newIssue.save();
