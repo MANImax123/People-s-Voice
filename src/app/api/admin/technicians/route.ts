@@ -16,7 +16,7 @@ export async function GET(request: NextRequest) {
     if (specialization) filter.specialization = specialization;
     if (isActive !== null) filter.isActive = isActive === 'true';
 
-    // Get technicians
+    // Get techs
     const techs = await Tech.find(filter)
       .select('name email phone specialization experience isActive workload createdAt')
       .sort({ name: 1 })
@@ -42,14 +42,14 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      technicians: techsWithWorkload,
+      techs: techsWithWorkload,
       total: techsWithWorkload.length
     });
 
   } catch (error) {
-    console.error('Error fetching technicians:', error);
+    console.error('Error fetching techs:', error);
     return NextResponse.json(
-      { error: 'Failed to fetch technicians' },
+      { error: 'Failed to fetch techs' },
       { status: 500 }
     );
   }

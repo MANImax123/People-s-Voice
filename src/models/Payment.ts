@@ -41,7 +41,7 @@ const PaymentSchema = new mongoose.Schema({
   },
   paymentMethod: {
     type: String,
-    enum: ['razorpay', 'upi', 'netbanking', 'card', 'wallet'],
+    enum: ['razorpay', 'upi', 'netbanking', 'card', 'wallet', 'online', 'offline'],
     default: 'razorpay',
   },
   razorpayOrderId: {
@@ -65,6 +65,12 @@ const PaymentSchema = new mongoose.Schema({
   },
   receiptUrl: {
     type: String,
+  },
+  receiptImage: {
+    type: String, // Base64 encoded image for offline payments
+  },
+  receiptNumber: {
+    type: String, // Receipt reference number for offline payments
   },
   additionalDetails: {
     type: mongoose.Schema.Types.Mixed,

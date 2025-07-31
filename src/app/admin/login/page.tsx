@@ -68,7 +68,7 @@ export default function AdminLoginPage() {
           </div>
           <CardTitle className="text-2xl text-center">Admin Login</CardTitle>
           <CardDescription className="text-center">
-            Access the administrative dashboard to manage issues and technicians
+            Access the administrative dashboard to manage issues and techs
           </CardDescription>
         </CardHeader>
         <CardContent>

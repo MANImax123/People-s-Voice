@@ -1,7 +1,7 @@
 
 # Civic Management & Reporting System
 
-An AI-powered platform for civic issue reporting and management with technician dashboard and analytics.
+An AI-powered platform for civic issue reporting and management with tech dashboard and analytics.
 
 ## Features
 
@@ -10,7 +10,7 @@ An AI-powered platform for civic issue reporting and management with technician 
 - 📧 Email notifications for resolved issues
 - 🗂️ Issue categorization and status tracking
 - 📱 Mobile-responsive design
-- 🔐 Dual authentication (users and technicians)
+- 🔐 Dual authentication (users and techs)
 
 ## Setup Instructions
 

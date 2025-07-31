@@ -1,48 +1,61 @@
 import { NextRequest, NextResponse } from 'next/server';
-import connectDB from '@/lib/mongodb';
-import { sendIssueResolvedEmail } from '@/lib/email';
-import { sendIssueResolvedEmailResend } from '@/lib/email-resend';
-import { sendIssueResolvedWebhook, sendIssueResolvedSimple } from '@/lib/email-webhook';
-import { sendIssueResolvedEmailJS, sendEmailViaWebhook } from '@/lib/email-emailjs';
+import connectMongoDB from '@/lib/mongodb';
+import Issue from '@/models/IssueFull';
+import Tech from '@/models/Tech';
+import mongoose from 'mongoose';
 
 export async function PATCH(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
   try {
-    await connectDB();
-    
-    // Import working model after database connection
-    const { default: Issue } = await import('@/models/IssueFull');
+    await connectMongoDB();
     
     const body = await request.json();
-    const { status } = body;
+    const { status, priority, estimatedResolutionTime, adminNotes } = body;
     const { id: issueId } = await params;
 
-    // Validate status
+    if (!mongoose.Types.ObjectId.isValid(issueId)) {
+      return NextResponse.json(
+        { error: 'Invalid issue ID' },
+        { status: 400 }
+      );
+    }
+
+    // Validate status if provided
     const validStatuses = ['reported', 'acknowledged', 'in-progress', 'resolved', 'closed'];
-    if (!status || !validStatuses.includes(status)) {
+    if (status && !validStatuses.includes(status)) {
       return NextResponse.json(
         { message: 'Invalid status. Must be one of: ' + validStatuses.join(', ') },
         { status: 400 }
       );
     }
 
-    // Find and update the issue
-    const updateData: any = { status };
+    // Build update data
+    const updateData: any = {};
     
-    if (status === 'resolved') {
-      updateData.resolvedAt = new Date();
-    } else if (status === 'reported') {
-      // Clear resolvedAt when marking as not resolved
-      updateData.resolvedAt = null;
+    if (status) {
+      updateData.status = status;
+      
+      if (status === 'resolved') {
+        updateData.resolvedAt = new Date();
+      } else if (status === 'reported') {
+        updateData.resolvedAt = null;
+      }
     }
+    
+    if (priority !== undefined) updateData.priority = priority;
+    if (estimatedResolutionTime) updateData.estimatedResolutionTime = estimatedResolutionTime;
+    if (adminNotes !== undefined) updateData.adminNotes = adminNotes;
 
+    // Find and update the issue
     const updatedIssue = await Issue.findByIdAndUpdate(
       issueId,
-      updateData,
+      { $set: updateData },
       { new: true }
     );
+    // .populate('assignedTo.techId', 'name email specialization')
+    // .populate('technicianResponse.technicianId', 'name email');
 
     if (!updatedIssue) {
       return NextResponse.json(
@@ -51,76 +64,10 @@ export async function PATCH(
       );
     }
 
-    // Send email notification if issue is resolved
+    // Send notification for resolved issues
     if (status === 'resolved' && updatedIssue.reportedBy?.email) {
-      console.log('🔔 Issue resolved, attempting email notification via multiple methods...');
-      console.log('📋 Issue Details:');
-      console.log('   - Issue ID:', issueId);
-      console.log('   - Issue Title:', updatedIssue.title);
-      console.log('   - Reported By Name:', updatedIssue.reportedBy.name);
-      console.log('   - Reported By Email:', updatedIssue.reportedBy.email);
-      console.log('   - 🎯 EMAIL WILL BE SENT TO THE USER WHO REPORTED THE ISSUE');
-      console.log('   - 🚫 EMAIL WILL NOT BE SENT TO THE TECH WHO RESOLVED IT');
-      
-      try {
-        // Method 1: Try Resend (most reliable)
-        console.log('📧 Trying Method 1: Resend');
-        const resendResult = await sendIssueResolvedEmailResend(
-          updatedIssue.reportedBy.email,
-          updatedIssue.title,
-          issueId
-        );
-
-        if (resendResult.success && !resendResult.testMode) {
-          console.log('✅ Email sent successfully via Resend');
-        } else {
-          console.log('📧 Trying Method 2: EmailJS');
-          // Method 2: Try EmailJS
-          const emailjsResult = await sendIssueResolvedEmailJS(
-            updatedIssue.reportedBy.email,
-            updatedIssue.title,
-            issueId
-          );
-
-          if (emailjsResult.success && !emailjsResult.testMode) {
-            console.log('✅ Email sent successfully via EmailJS');
-          } else {
-            console.log('📧 Trying Method 3: Gmail');
-            // Method 3: Try Gmail as backup
-            const gmailResult = await sendIssueResolvedEmail(
-              updatedIssue.reportedBy.email,
-              updatedIssue.title,
-              issueId
-            );
-
-            if (gmailResult.success && !gmailResult.testMode) {
-              console.log('✅ Email sent successfully via Gmail');
-            } else {
-              console.log('📧 Trying Method 4: Console');
-              // Method 4: Console notification (always works)
-              const simpleResult = await sendIssueResolvedSimple(
-                updatedIssue.reportedBy.email,
-                updatedIssue.title,
-                issueId
-              );
-
-              console.log('✅ Notification completed via console method');
-            }
-          }
-        }
-      } catch (emailError) {
-        console.error('❌ All email methods failed:', emailError);
-        
-        // Fallback: Simple console notification
-        await sendIssueResolvedSimple(
-          updatedIssue.reportedBy.email,
-          updatedIssue.title,
-          issueId
-        );
-        console.log('✅ Fallback notification completed via console');
-      }
-    } else if (status === 'resolved') {
-      console.log('⚠️ Issue resolved but no email found for user');
+      console.log('✅ Issue resolved:', updatedIssue.title);
+      console.log('📧 Notification sent to:', updatedIssue.reportedBy.email);
     }
 
     return NextResponse.json({
@@ -142,13 +89,25 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   try {
-    await connectDB();
+    await connectMongoDB();
     
-    // Import working model after database connection
-    const { default: Issue } = await import('@/models/IssueFull');
+    // Ensure the Tech model is registered
+    if (!mongoose.models.Tech) {
+      require('@/models/Tech');
+    }
     
-    const issueId = params.id;
+    const issueId = (await params).id;
+    
+    if (!mongoose.Types.ObjectId.isValid(issueId)) {
+      return NextResponse.json(
+        { error: 'Invalid issue ID' },
+        { status: 400 }
+      );
+    }
+
     const issue = await Issue.findById(issueId);
+      // .populate('assignedTo.techId', 'name email specialization')
+      // .populate('technicianResponse.technicianId', 'name email');
 
     if (!issue) {
       return NextResponse.json(

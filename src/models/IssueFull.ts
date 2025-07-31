@@ -57,7 +57,7 @@ const IssueFullSchema = new mongoose.Schema({
   status: {
     type: String,
     default: 'reported',
-    enum: ['reported', 'acknowledged', 'in-progress', 'resolved', 'closed']
+    enum: ['reported', 'acknowledged', 'in-progress', 'completed', 'closed']
   },
   location: {
     metropolitanCity: {
@@ -198,7 +198,63 @@ const IssueFullSchema = new mongoose.Schema({
       type: Date,
       default: null
     }
-  }
+  },
+  technicianResponse: {
+    description: {
+      type: String,
+      default: ''
+    },
+    evidencePhotos: [{
+      data: {
+        type: String, // Base64 encoded image data
+        required: true
+      },
+      filename: {
+        type: String,
+        required: true
+      },
+      mimetype: {
+        type: String,
+        required: true
+      },
+      size: {
+        type: Number,
+        required: true
+      },
+      uploadedAt: {
+        type: Date,
+        default: Date.now
+      }
+    }],
+    completedAt: {
+      type: Date,
+      default: null
+    },
+    technicianId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Technician',
+      default: null
+    }
+  },
+  userReplies: [{
+    message: {
+      type: String,
+      required: true,
+      maxlength: 500
+    },
+    submittedBy: {
+      type: String,
+      required: true
+    },
+    submittedAt: {
+      type: Date,
+      default: Date.now
+    },
+    isFromReporter: {
+      type: Boolean,
+      default: false
+    }
+  }]
 }, {
   timestamps: true
 });

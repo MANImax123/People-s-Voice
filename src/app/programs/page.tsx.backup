@@ -1,0 +1,385 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { useToast } from "@/hooks/use-toast";
+import { Search, Filter, Calendar, TrendingUp, Users, Eye, ChevronLeft, ChevronRight } from "lucide-react";
+import ProgramCard from "@/components/program-card";
+import { ProgramCardSkeleton, DashboardSkeleton } from "@/components/ui/skeleton-loaders";
+
+interface Program {
+  _id: string;
+  title: string;
+  description: string;
+  category: string;
+  status: string;
+  priority: string;
+  startDate: string;
+  endDate?: string;
+  budget?: number;
+  targetBeneficiaries?: number;
+  tags: string[];
+  likes: any[];
+  dislikes: any[];
+  comments: any[];
+  likesCount: number;
+  dislikesCount: number;
+  commentsCount: number;
+  viewsCount: number;
+  createdAt: string;
+  createdBy: {
+    adminName: string;
+  };
+}
+
+export default function ProgramsPage() {
+  const [user, setUser] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [programs, setPrograms] = useState<Program[]>([]);
+  const [filteredPrograms, setFilteredPrograms] = useState<Program[]>([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('all');
+  const [selectedStatus, setSelectedStatus] = useState('active');
+  const [sortBy, setSortBy] = useState('createdAt');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [stats, setStats] = useState({
+    totalPrograms: 0,
+    activePrograms: 0,
+    totalLikes: 0,
+    totalViews: 0,
+  });
+  
+  const { toast } = useToast();
+
+  const categories = [
+    { value: 'all', label: 'All Categories' },
+    { value: 'health', label: 'Health' },
+    { value: 'education', label: 'Education' },
+    { value: 'infrastructure', label: 'Infrastructure' },
+    { value: 'welfare', label: 'Welfare' },
+    { value: 'employment', label: 'Employment' },
+    { value: 'environment', label: 'Environment' },
+    { value: 'housing', label: 'Housing' },
+    { value: 'transportation', label: 'Transportation' },
+    { value: 'agriculture', label: 'Agriculture' },
+    { value: 'technology', label: 'Technology' },
+    { value: 'tourism', label: 'Tourism' },
+    { value: 'safety', label: 'Safety' },
+    { value: 'other', label: 'Other' },
+  ];
+
+  useEffect(() => {
+    // Check authentication (optional - programs are public)
+    const authData = localStorage.getItem('auth-user');
+    if (authData) {
+      const userData = JSON.parse(authData);
+      setUser(userData);
+    }
+    // Load programs regardless of authentication status
+    loadPrograms();
+  }, [currentPage, selectedCategory, selectedStatus, sortBy]);
+
+  useEffect(() => {
+    // Filter programs based on search term
+    if (searchTerm) {
+      const filtered = programs.filter(program =>
+        program.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        program.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        program.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()))
+      );
+      setFilteredPrograms(filtered);
+    } else {
+      setFilteredPrograms(programs);
+    }
+  }, [searchTerm, programs]);
+
+  const loadPrograms = async () => {
+    setLoading(true);
+    try {
+      const params = new URLSearchParams({
+        page: currentPage.toString(),
+        limit: '12',
+        category: selectedCategory,
+        status: selectedStatus,
+        sortBy,
+      });
+
+      const response = await fetch(`/api/programs?${params}`);
+      if (response.ok) {
+        const data = await response.json();
+        setPrograms(data.programs);
+        setFilteredPrograms(data.programs);
+        setTotalPages(data.pagination.totalPages);
+        
+        // Calculate stats
+        const stats = {
+          totalPrograms: data.pagination.totalPrograms,
+          activePrograms: data.programs.filter((p: Program) => p.status === 'active').length,
+          totalLikes: data.programs.reduce((sum: number, p: Program) => sum + p.likesCount, 0),
+          totalViews: data.programs.reduce((sum: number, p: Program) => sum + p.viewsCount, 0),
+        };
+        setStats(stats);
+      } else {
+        throw new Error('Failed to load programs');
+      }
+    } catch (error: any) {
+      console.error('Load programs error:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load programs. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleProgramUpdate = (programId: string) => {
+    // Reload programs to get updated data
+    loadPrograms();
+  };
+
+  if (loading && programs.length === 0) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <DashboardSkeleton />
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Header */}
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">Government Programs & Schemes</h1>
+          <p className="text-gray-600 mb-6">
+            Discover and engage with municipal and government initiatives in your area
+          </p>
+
+          {/* Login prompt for non-authenticated users */}
+          {!user && (
+            <Card className="mb-6 border-blue-200 bg-blue-50">
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-3">
+                    <div className="p-2 bg-blue-100 rounded-lg">
+                      <Users className="w-5 h-5 text-blue-600" />
+                    </div>
+                    <div>
+                      <p className="font-medium text-blue-900">Join the conversation!</p>
+                      <p className="text-sm text-blue-700">Login to like, comment, and engage with government programs</p>
+                    </div>
+                  </div>
+                  <Button asChild className="bg-blue-600 hover:bg-blue-700">
+                    <a href="/login">Login</a>
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Stats Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+            <Card>
+              <CardContent className="p-6">
+                <div className="flex items-center space-x-4">
+                  <div className="p-3 bg-blue-100 rounded-lg">
+                    <Calendar className="w-6 h-6 text-blue-600" />
+                  </div>
+                  <div>
+                    <p className="text-2xl font-bold text-gray-900">{stats.totalPrograms}</p>
+                    <p className="text-sm text-gray-600">Total Programs</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardContent className="p-6">
+                <div className="flex items-center space-x-4">
+                  <div className="p-3 bg-green-100 rounded-lg">
+                    <TrendingUp className="w-6 h-6 text-green-600" />
+                  </div>
+                  <div>
+                    <p className="text-2xl font-bold text-gray-900">{stats.activePrograms}</p>
+                    <p className="text-sm text-gray-600">Active Programs</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardContent className="p-6">
+                <div className="flex items-center space-x-4">
+                  <div className="p-3 bg-purple-100 rounded-lg">
+                    <Users className="w-6 h-6 text-purple-600" />
+                  </div>
+                  <div>
+                    <p className="text-2xl font-bold text-gray-900">{stats.totalLikes}</p>
+                    <p className="text-sm text-gray-600">Community Likes</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardContent className="p-6">
+                <div className="flex items-center space-x-4">
+                  <div className="p-3 bg-orange-100 rounded-lg">
+                    <Eye className="w-6 h-6 text-orange-600" />
+                  </div>
+                  <div>
+                    <p className="text-2xl font-bold text-gray-900">{stats.totalViews}</p>
+                    <p className="text-sm text-gray-600">Total Views</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Filters */}
+          <Card className="mb-6">
+            <CardContent className="p-6">
+              <div className="flex flex-col md:flex-row gap-4">
+                <div className="flex-1">
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                    <Input
+                      placeholder="Search programs..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className="pl-10"
+                    />
+                  </div>
+                </div>
+                
+                <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+                  <SelectTrigger className="w-full md:w-48">
+                    <SelectValue placeholder="Category" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {categories.map((category) => (
+                      <SelectItem key={category.value} value={category.value}>
+                        {category.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+
+                <Select value={selectedStatus} onValueChange={setSelectedStatus}>
+                  <SelectTrigger className="w-full md:w-32">
+                    <SelectValue placeholder="Status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Status</SelectItem>
+                    <SelectItem value="active">Active</SelectItem>
+                    <SelectItem value="completed">Completed</SelectItem>
+                    <SelectItem value="paused">Paused</SelectItem>
+                  </SelectContent>
+                </Select>
+
+                <Select value={sortBy} onValueChange={setSortBy}>
+                  <SelectTrigger className="w-full md:w-32">
+                    <SelectValue placeholder="Sort by" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="createdAt">Newest</SelectItem>
+                    <SelectItem value="likesCount">Most Liked</SelectItem>
+                    <SelectItem value="viewsCount">Most Viewed</SelectItem>
+                    <SelectItem value="commentsCount">Most Discussed</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Programs Grid */}
+        {loading ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[...Array(6)].map((_, i) => (
+              <ProgramCardSkeleton key={i} />
+            ))}
+          </div>
+        ) : filteredPrograms.length > 0 ? (
+          <>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {filteredPrograms.map((program) => (
+                <ProgramCard
+                  key={program._id}
+                  program={program}
+                  user={user}
+                  onUpdate={handleProgramUpdate}
+                />
+              ))}
+            </div>
+
+            {/* Pagination */}
+            {totalPages > 1 && (
+              <div className="flex items-center justify-center space-x-2 mt-8">
+                <Button
+                  variant="outline"
+                  onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                  disabled={currentPage === 1}
+                  className="flex items-center gap-2"
+                >
+                  <ChevronLeft className="w-4 h-4" />
+                  Previous
+                </Button>
+                
+                <div className="flex items-center space-x-1">
+                  {[...Array(Math.min(5, totalPages))].map((_, i) => {
+                    const pageNum = i + 1;
+                    return (
+                      <Button
+                        key={pageNum}
+                        variant={currentPage === pageNum ? "default" : "outline"}
+                        onClick={() => setCurrentPage(pageNum)}
+                        className="w-10 h-10"
+                      >
+                        {pageNum}
+                      </Button>
+                    );
+                  })}
+                </div>
+                
+                <Button
+                  variant="outline"
+                  onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+                  disabled={currentPage === totalPages}
+                  className="flex items-center gap-2"
+                >
+                  Next
+                  <ChevronRight className="w-4 h-4" />
+                </Button>
+              </div>
+            )}
+          </>
+        ) : (
+          <div className="text-center py-12">
+            <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Calendar className="w-12 h-12 text-gray-400" />
+            </div>
+            <h3 className="text-xl font-semibold text-gray-900 mb-2">No Programs Found</h3>
+            <p className="text-gray-600 mb-4">
+              {searchTerm ? 'No programs match your search criteria.' : 'No programs are currently available.'}
+            </p>
+            {searchTerm && (
+              <Button onClick={() => setSearchTerm('')} variant="outline">
+                Clear Search
+              </Button>
+            )}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}

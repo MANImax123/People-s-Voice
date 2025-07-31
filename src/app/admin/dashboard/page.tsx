@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -117,10 +118,10 @@ export default function AdminDashboard() {
       const response = await fetch('/api/admin/technicians');
       if (response.ok) {
         const data = await response.json();
-        setTechnicians(data.technicians || []);
+        setTechnicians(data.techs || []);
       }
     } catch (error) {
-      console.error('Error loading technicians:', error);
+      console.error('Error loading techs:', error);
     }
   };
 
@@ -232,7 +233,14 @@ export default function AdminDashboard() {
                 Admin Dashboard
               </h1>
             </div>
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-6">
+              <Link 
+                href="/admin/programs"
+                className="text-gray-600 hover:text-gray-900 flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-100 transition-colors"
+              >
+                <Calendar className="w-4 h-4" />
+                Programs
+              </Link>
               <span className="text-gray-700">Welcome, {admin.name}</span>
               <Badge variant="outline">admin</Badge>
               <Button onClick={handleLogout} variant="outline">
@@ -312,7 +320,7 @@ export default function AdminDashboard() {
               Assigned Issues ({assignedIssues.length})
             </TabsTrigger>
             <TabsTrigger value="technicians">
-              Technicians ({technicians.length})
+              Techs ({technicians.length})
             </TabsTrigger>
           </TabsList>
 
@@ -321,7 +329,7 @@ export default function AdminDashboard() {
               <CardHeader>
                 <CardTitle>Unassigned Issues</CardTitle>
                 <CardDescription>
-                  Issues waiting to be assigned to technicians
+                  Issues waiting to be assigned to techs
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -387,7 +395,7 @@ export default function AdminDashboard() {
               <CardHeader>
                 <CardTitle>Assigned Issues</CardTitle>
                 <CardDescription>
-                  Issues currently being worked on by technicians
+                  Issues currently being worked on by techs
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -445,16 +453,16 @@ export default function AdminDashboard() {
           <TabsContent value="technicians" className="space-y-4">
             <Card>
               <CardHeader>
-                <CardTitle>Technician Management</CardTitle>
+                <CardTitle>Tech Management</CardTitle>
                 <CardDescription>
-                  Manage and monitor technician performance
+                  Manage and monitor tech performance
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead>Technician</TableHead>
+                      <TableHead>Tech</TableHead>
                       <TableHead>Specialization</TableHead>
                       <TableHead>Current Load</TableHead>
                       <TableHead>Completed</TableHead>
@@ -510,7 +518,7 @@ export default function AdminDashboard() {
       <Dialog open={assignDialogOpen} onOpenChange={setAssignDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Assign Issue to Technician</DialogTitle>
+            <DialogTitle>Assign Issue to Tech</DialogTitle>
             <DialogDescription>
               {selectedIssue && (
                 <>
@@ -526,10 +534,10 @@ export default function AdminDashboard() {
           
           <div className="space-y-4">
             <div>
-              <label className="text-sm font-medium">Select Technician</label>
+              <label className="text-sm font-medium">Select Tech</label>
               <Select value={selectedTech} onValueChange={setSelectedTech}>
                 <SelectTrigger>
-                  <SelectValue placeholder="Choose a technician" />
+                  <SelectValue placeholder="Choose a tech" />
                 </SelectTrigger>
                 <SelectContent>
                   {technicians

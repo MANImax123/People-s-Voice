@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useAuth } from "@/providers/auth-provider";
 import { metropolitanCities, issueCategories } from "@/lib/civic-data";
+import { ListSkeleton } from "@/components/ui/skeleton-loaders";
 
 interface Issue {
   _id: string;
@@ -296,9 +297,8 @@ export default function IssuesPage() {
 
         {/* Loading State */}
         {loading && (
-          <div className="text-center py-12">
-            <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-            <p className="mt-2 text-gray-600">Loading issues...</p>
+          <div className="space-y-6">
+            <ListSkeleton items={5} />
           </div>
         )}
 
@@ -435,6 +435,17 @@ export default function IssuesPage() {
                             </div>
                           </div>
                         )}
+                      </div>
+                      
+                      {/* View Details Button */}
+                      <div className="mt-4 pt-4 border-t border-gray-200">
+                        <Link
+                          href={`/issues/${issue._id}`}
+                          className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors inline-flex items-center text-sm font-medium"
+                        >
+                          <span className="mr-2">👁️</span>
+                          View Details & Tech Response
+                        </Link>
                       </div>
                     </div>
                   </div>

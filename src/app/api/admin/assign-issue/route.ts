@@ -32,7 +32,7 @@ export async function POST(request: NextRequest) {
     const tech = await Tech.findById(techId);
     if (!tech) {
       return NextResponse.json(
-        { error: 'Technician not found' },
+        { error: 'Tech not found' },
         { status: 404 }
       );
     }
@@ -49,7 +49,7 @@ export async function POST(request: NextRequest) {
     // Check if issue is already assigned
     if (issue.assignedTo.techId && issue.status !== 'reported') {
       return NextResponse.json(
-        { error: 'Issue is already assigned to a technician' },
+        { error: 'Issue is already assigned to a tech' },
         { status: 400 }
       );
     }
