@@ -37,7 +37,7 @@ Replace these lines in your `.env.local`:
 
 ```bash
 # Replace with your actual Twilio credentials:
-TWILIO_ACCOUNT_SID=ACxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+TWILIO_ACCOUNT_SID=AC_your_account_sid_placeholder_here
 TWILIO_AUTH_TOKEN=your_actual_auth_token_here
 TWILIO_WHATSAPP_FROM=whatsapp:+14155238886
 ```

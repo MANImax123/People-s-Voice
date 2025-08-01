@@ -54,7 +54,7 @@ const AdminSchema = new mongoose.Schema({
 });
 
 // Create indexes
-AdminSchema.index({ email: 1 });
+// Note: email index is already created by 'unique: true' above
 AdminSchema.index({ role: 1, isActive: 1 });
 
 export default mongoose.models.Admin || mongoose.model('Admin', AdminSchema);

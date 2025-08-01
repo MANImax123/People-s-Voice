@@ -88,7 +88,7 @@ const techSchema = new mongoose.Schema({
 });
 
 // Create indexes
-techSchema.index({ email: 1 });
+// Note: email index is already created by 'unique: true' above
 techSchema.index({ specialization: 1 });
 techSchema.index({ status: 1 });
 techSchema.index({ location: '2dsphere' });

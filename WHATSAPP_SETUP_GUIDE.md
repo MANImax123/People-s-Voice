@@ -115,7 +115,7 @@ WHATSAPP_PHONE_NUMBER_ID=123456789012345
 ### Step 4: Configure Environment Variables
 Update your `.env.local`:
 ```bash
-TWILIO_ACCOUNT_SID=ACxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+TWILIO_ACCOUNT_SID=AC_your_account_sid_placeholder_here
 TWILIO_AUTH_TOKEN=your_auth_token_here
 TWILIO_WHATSAPP_FROM=whatsapp:+14155238886
 ```
@@ -165,8 +165,8 @@ WHATSAPP_PHONE_NUMBER_ID=102290129340398
 
 ### Twilio Example:
 ```bash
-TWILIO_ACCOUNT_SID=AC1234567890abcdef1234567890abcdef
-TWILIO_AUTH_TOKEN=your_auth_token_1234567890abcdef
+TWILIO_ACCOUNT_SID=AC_your_account_sid_placeholder_here
+TWILIO_AUTH_TOKEN=your_auth_token_placeholder_here
 TWILIO_WHATSAPP_FROM=whatsapp:+14155238886
 ```
 

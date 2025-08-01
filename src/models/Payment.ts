@@ -82,6 +82,6 @@ const PaymentSchema = new mongoose.Schema({
 // Create compound index for efficient queries
 PaymentSchema.index({ userEmail: 1, createdAt: -1 });
 PaymentSchema.index({ billType: 1, status: 1 });
-PaymentSchema.index({ transactionId: 1 });
+// Note: transactionId index is already created by 'unique: true' above
 
 export default mongoose.models.Payment || mongoose.model('Payment', PaymentSchema);
