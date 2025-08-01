@@ -38,6 +38,7 @@ import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CreditCard, Receipt, Clock, CheckCircle, XCircle, Calendar, Upload, Camera, FileText, Zap, AlertCircle } from "lucide-react";
+import PaymentConfigStatus from "@/components/payment-config-status";
 
 declare global {
   interface Window {
@@ -194,19 +195,32 @@ export default function PaymentsPage() {
       });
 
       if (!orderResponse.ok) {
-        throw new Error('Failed to create payment order');
+        const errorData = await orderResponse.json();
+        
+        if (errorData.code === 'PAYMENT_CONFIG_ERROR' || errorData.code === 'RAZORPAY_AUTH_ERROR') {
+          throw new Error('Payment service is not properly configured. Please contact administrator.');
+        }
+        
+        throw new Error(errorData.message || 'Failed to create payment order');
       }
 
       const orderData = await orderResponse.json();
 
-      // Initialize Razorpay payment
+      // Initialize Razorpay payment with all payment methods
       const options = {
-        key: 'rzp_test_1DP5mmOlF5G5ag', // Replace with your Razorpay key
+        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || 'rzp_test_1DP5mmOlF5G5ag',
         amount: orderData.amount,
-        currency: orderData.currency,
+        currency: orderData.currency || 'INR',
         name: 'Government Bill Payment',
         description: formData.description,
         order_id: orderData.orderId,
+        method: {
+          card: true,
+          netbanking: true,
+          wallet: true,
+          upi: true,
+          paylater: true
+        },
         handler: async (response: any) => {
           try {
             // Verify payment
@@ -223,8 +237,8 @@ export default function PaymentsPage() {
 
             if (verifyResponse.ok) {
               toast({
-                title: "Payment Successful",
-                description: `Your ${formData.billType} payment has been completed successfully!`,
+                title: "Payment Successful! 🎉",
+                description: `Your ${formData.billType} payment of ₹${amount} has been completed successfully!`,
               });
               
               // Reset form
@@ -250,14 +264,38 @@ export default function PaymentsPage() {
             });
           }
         },
+        modal: {
+          ondismiss: () => {
+            toast({
+              title: "Payment Cancelled",
+              description: "Payment was cancelled by user.",
+              variant: "destructive",
+            });
+          }
+        },
         prefill: {
           name: user.name,
           email: user.email,
           contact: user.phone || '',
         },
+        notes: {
+          bill_type: formData.billType,
+          bill_number: formData.billNumber,
+          user_email: user.email
+        },
         theme: {
           color: '#3B82F6',
         },
+        retry: {
+          enabled: true,
+          max_count: 3
+        },
+        timeout: 300,
+        remember_customer: true,
+        readonly: {
+          email: true,
+          contact: true
+        }
       };
 
       const paymentObject = new window.Razorpay(options);
@@ -742,6 +780,9 @@ export default function PaymentsPage() {
           </TabsList>
           
           <TabsContent value="pay-bills" className="space-y-6">
+            {/* Payment Configuration Status */}
+            <PaymentConfigStatus />
+            
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
@@ -826,10 +867,29 @@ export default function PaymentsPage() {
                     </div>
                   </div>
 
+                  {/* Payment Methods Info */}
+                  <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                    <div className="flex items-center gap-2 mb-2">
+                      <CreditCard className="w-4 h-4 text-blue-600" />
+                      <span className="text-sm font-medium text-blue-800">Accepted Payment Methods</span>
+                    </div>
+                    <div className="flex flex-wrap gap-2 text-xs text-blue-700">
+                      <Badge variant="outline" className="bg-white">Credit Card</Badge>
+                      <Badge variant="outline" className="bg-white">Debit Card</Badge>
+                      <Badge variant="outline" className="bg-white">Net Banking</Badge>
+                      <Badge variant="outline" className="bg-white">UPI</Badge>
+                      <Badge variant="outline" className="bg-white">Digital Wallets</Badge>
+                    </div>
+                    <p className="text-xs text-blue-600 mt-2">
+                      🔒 Secure payment gateway powered by Razorpay
+                    </p>
+                  </div>
+
                   <Button
                     type="submit"
-                    className="w-full"
+                    className="w-full py-3"
                     disabled={paymentLoading}
+                    size="lg"
                   >
                     {paymentLoading ? (
                       <>
@@ -839,10 +899,14 @@ export default function PaymentsPage() {
                     ) : (
                       <>
                         <CreditCard className="w-4 h-4 mr-2" />
-                        Pay Now
+                        Pay ₹{formData.amount || '0'} - Choose Payment Method
                       </>
                     )}
                   </Button>
+                  
+                  <p className="text-xs text-gray-500 text-center">
+                    You will be redirected to secure payment gateway to complete your transaction
+                  </p>
                 </form>
               </CardContent>
             </Card>

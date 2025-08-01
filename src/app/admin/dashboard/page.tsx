@@ -241,6 +241,13 @@ export default function AdminDashboard() {
                 <Calendar className="w-4 h-4" />
                 Programs
               </Link>
+              <Link 
+                href="/admin/whatsapp"
+                className="text-gray-600 hover:text-gray-900 flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-100 transition-colors"
+              >
+                <Mail className="w-4 h-4" />
+                WhatsApp
+              </Link>
               <span className="text-gray-700">Welcome, {admin.name}</span>
               <Badge variant="outline">admin</Badge>
               <Button onClick={handleLogout} variant="outline">

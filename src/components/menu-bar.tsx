@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Lightbulb, LogOut, User, Menu, X, MapPin, Vote, Settings, CreditCard, Shield, Calendar, Bus, Clock, Building, MapPinIcon, FileText } from "lucide-react";
+import { Lightbulb, LogOut, User, Menu, X, MapPin, Vote, Settings, CreditCard, Shield, Calendar, Bus, Clock, Building, MapPinIcon, FileText, HelpCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/providers/auth-provider";
 import { useToast } from "@/hooks/use-toast";
@@ -77,6 +77,7 @@ export default function MenuBar() {
     { href: "/zoning", label: "Zoning", icon: <MapPinIcon className="w-4 h-4" /> },
     { href: "/voting", label: "Voting", icon: <Vote className="w-4 h-4" /> },
     { href: "/payments", label: "Bill Payments", icon: <CreditCard className="w-4 h-4" /> },
+    { href: "/help", label: "Help & Support", icon: <HelpCircle className="w-4 h-4" /> },
   ];
 
   const techItems = [

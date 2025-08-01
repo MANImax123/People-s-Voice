@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import dbConnect from '@/lib/mongodb';
 import Program from '@/models/Program';
+import User from '@/models/User';
+import { sendBulkWhatsAppNotifications } from '@/lib/whatsapp-notifications';
 
 export async function GET(req: NextRequest) {
   try {
@@ -129,6 +131,36 @@ export async function POST(req: NextRequest) {
     });
 
     await program.save();
+
+    // Send WhatsApp notifications to all users about the new program
+    try {
+      console.log('📱 Starting WhatsApp notifications for new program:', program.title);
+      
+      // Fetch all users from the database
+      const users = await User.find({ role: 'user' }, { phoneNumber: 1, name: 1 }).lean();
+      
+      if (users && users.length > 0) {
+        console.log(`📱 Found ${users.length} users to notify`);
+        
+        // Send bulk WhatsApp notifications
+        const notificationResult = await sendBulkWhatsAppNotifications(
+          users.map(user => ({
+            phoneNumber: user.phoneNumber,
+            name: user.name
+          })),
+          program.title,
+          program._id.toString(),
+          program.category
+        );
+        
+        console.log(`📱 WhatsApp notifications sent: ${notificationResult.success} success, ${notificationResult.failed} failed`);
+      } else {
+        console.log('📱 No users found to notify');
+      }
+    } catch (notificationError) {
+      // Don't fail the program creation if notifications fail
+      console.error('📱 Error sending WhatsApp notifications:', notificationError);
+    }
 
     return NextResponse.json({
       success: true,

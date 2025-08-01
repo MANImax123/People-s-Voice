@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { Toaster } from '@/components/ui/toaster';
 import Footer from '@/components/footer';
+import LiveChatbot from '@/components/live-chatbot';
 import './globals.css';
 import { AuthProvider } from '@/providers/auth-provider';
 import ConditionalNavigation from '@/components/conditional-navigation';
@@ -31,6 +32,7 @@ export default function RootLayout({
             {children}
           </ConditionalMain>
           <Footer />
+          <LiveChatbot />
           <Toaster />
         </AuthProvider>
       </body>

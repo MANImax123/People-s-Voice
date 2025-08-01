@@ -5,9 +5,21 @@ import crypto from 'crypto';
 
 // Initialize Razorpay
 const razorpay = new Razorpay({
-  key_id: process.env.RAZORPAY_KEY_ID || 'rzp_test_1DP5mmOlF5G5ag', // Test key
-  key_secret: process.env.RAZORPAY_KEY_SECRET || 'YOUR_SECRET_KEY_HERE', // Add your secret key
+  key_id: process.env.RAZORPAY_KEY_ID || 'rzp_test_1DP5mmOlF5G5ag',
+  key_secret: process.env.RAZORPAY_KEY_SECRET || 'YOUR_SECRET_KEY_HERE',
 });
+
+// Check if credentials are properly configured
+function isRazorpayConfigured() {
+  const keyId = process.env.RAZORPAY_KEY_ID;
+  const keySecret = process.env.RAZORPAY_KEY_SECRET;
+  
+  return keyId && 
+         keySecret && 
+         keyId !== 'rzp_test_1DP5mmOlF5G5ag' &&
+         keySecret !== 'YOUR_SECRET_KEY_HERE' &&
+         keySecret !== 'test_mode_secret_key_placeholder';
+}
 
 export async function POST(request: NextRequest) {
   try {
@@ -26,6 +38,18 @@ export async function POST(request: NextRequest) {
       dueDate,
       additionalDetails
     } = body;
+
+    // Check if Razorpay is properly configured
+    if (!isRazorpayConfigured()) {
+      return NextResponse.json(
+        { 
+          error: 'Payment service not configured',
+          message: 'Razorpay credentials are not properly set up. Please contact administrator.',
+          code: 'PAYMENT_CONFIG_ERROR'
+        },
+        { status: 503 }
+      );
+    }
 
     // Validate required fields
     if (!userEmail || !userName || !billType || !billNumber || !description || !amount) {
@@ -46,18 +70,43 @@ export async function POST(request: NextRequest) {
     // Generate unique transaction ID
     const transactionId = `TXN_${Date.now()}_${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
 
-    // Create Razorpay order
-    const razorpayOrder = await razorpay.orders.create({
-      amount: Math.round(amount * 100), // Convert to paisa
-      currency: 'INR',
-      receipt: transactionId,
-      notes: {
-        billType,
-        billNumber,
-        userEmail,
-        userName,
-      },
-    });
+    // Create Razorpay order with error handling
+    let razorpayOrder;
+    try {
+      razorpayOrder = await razorpay.orders.create({
+        amount: Math.round(amount * 100), // Convert to paisa
+        currency: 'INR',
+        receipt: transactionId,
+        notes: {
+          billType,
+          billNumber,
+          userEmail,
+          userName,
+        },
+      });
+    } catch (razorpayError: any) {
+      console.error('Error creating payment order:', razorpayError);
+      
+      if (razorpayError.statusCode === 401) {
+        return NextResponse.json(
+          { 
+            error: 'Payment configuration error',
+            message: 'Invalid Razorpay credentials. Please check your API keys.',
+            code: 'RAZORPAY_AUTH_ERROR'
+          },
+          { status: 503 }
+        );
+      }
+      
+      return NextResponse.json(
+        { 
+          error: 'Payment service error',
+          message: 'Unable to create payment order. Please try again.',
+          code: 'RAZORPAY_ORDER_ERROR'
+        },
+        { status: 503 }
+      );
+    }
 
     // Save payment record to database
     const payment = new Payment({

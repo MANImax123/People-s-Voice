@@ -290,22 +290,42 @@ export default function AdminProgramsPage() {
               <p className="text-gray-600 mt-2">Create and manage government programs and schemes</p>
             </div>
             
-            <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
-              <DialogTrigger asChild>
-                <Button className="flex items-center gap-2" onClick={resetForm}>
-                  <Plus className="w-4 h-4" />
-                  New Program
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-                <DialogHeader>
-                  <DialogTitle>
-                    {editingProgram ? 'Edit Program' : 'Create New Program'}
-                  </DialogTitle>
-                </DialogHeader>
-                
-                <form onSubmit={handleSubmit} className="space-y-6">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="flex items-center gap-4">
+              <a 
+                href="/admin/dashboard"
+                className="text-gray-600 hover:text-gray-900 flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-100 transition-colors"
+              >
+                Dashboard
+              </a>
+              <a 
+                href="/admin/whatsapp"
+                className="text-gray-600 hover:text-gray-900 flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-100 transition-colors"
+              >
+                WhatsApp
+              </a>
+              
+              <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
+                <DialogTrigger asChild>
+                  <Button className="flex items-center gap-2" onClick={resetForm}>
+                    <Plus className="w-4 h-4" />
+                    New Program
+                  </Button>
+                </DialogTrigger>
+              </Dialog>
+            </div>
+          </div>
+        </div>
+
+        <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
+          <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>
+                {editingProgram ? 'Edit Program' : 'Create New Program'}
+              </DialogTitle>
+            </DialogHeader>
+            
+            <form onSubmit={handleSubmit} className="space-y-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-2">
                       <Label htmlFor="title">Program Title *</Label>
                       <Input
@@ -488,9 +508,7 @@ export default function AdminProgramsPage() {
                 </form>
               </DialogContent>
             </Dialog>
-          </div>
-        </div>
-
+        
         {/* Programs List */}
         <Card>
           <CardHeader>
