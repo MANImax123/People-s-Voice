@@ -19,7 +19,7 @@
    
 3. **With your actual key**:
    ```bash
-   GEMINI_API_KEY=AIzaSyYour_actual_key_here
+   GEMINI_API_KEY=your_actual_gemini_api_key_from_google_ai_studio
    ```
 
 4. **Restart your server**:
