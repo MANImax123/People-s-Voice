@@ -393,7 +393,13 @@ ${nearbyPlaces.join(' • ')}
 2. Select the category (Infrastructure, Public Health, etc.)
 3. Provide detailed description
 4. Add photos if available
-5. Submit your report
+5. **NEW!** 📍 Use Google Maps to pinpoint exact location OR enter manually
+6. Submit your report
+
+**Location Features:**
+🗺️ **Google Maps Integration:** Click exact location on interactive map
+📍 **GPS Coordinates:** Automatic latitude/longitude capture
+✏️ **Manual Entry:** Traditional address input still available
 
 Your issue will be assigned to the relevant department and you'll receive updates via email and WhatsApp.
 

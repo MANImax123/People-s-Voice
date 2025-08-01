@@ -12,7 +12,6 @@ import {
   Users, 
   Search,
   Filter,
-  Plus,
   ExternalLink
 } from 'lucide-react';
 
@@ -256,7 +255,7 @@ export default function EventsPage() {
 
         {/* Filters and Search */}
         <div className="bg-white rounded-lg shadow-sm border p-6 mb-8">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {/* Search */}
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
@@ -295,12 +294,6 @@ export default function EventsPage() {
               <option value="completed">Completed</option>
               <option value="cancelled">Cancelled</option>
             </select>
-
-            {/* Add Event Button */}
-            <Button className="flex items-center gap-2">
-              <Plus className="w-4 h-4" />
-              Suggest Event
-            </Button>
           </div>
         </div>
 
@@ -358,16 +351,7 @@ export default function EventsPage() {
                   </div>
                 )}
 
-                <div className="flex gap-2 pt-2">
-                  <Button 
-                    size="sm" 
-                    className="flex-1"
-                    disabled={event.status === 'completed' || event.status === 'cancelled'}
-                  >
-                    {event.status === 'upcoming' ? 'Register' : 
-                     event.status === 'ongoing' ? 'Join Now' : 
-                     event.status === 'completed' ? 'Completed' : 'Cancelled'}
-                  </Button>
+                <div className="flex justify-end pt-2">
                   <Button variant="outline" size="sm">
                     <ExternalLink className="w-4 h-4" />
                   </Button>
@@ -387,18 +371,6 @@ export default function EventsPage() {
             </p>
           </div>
         )}
-
-        {/* Footer Info */}
-        <div className="mt-12 bg-blue-50 rounded-lg p-6">
-          <h3 className="font-semibold text-blue-900 mb-2">Want to organize an event?</h3>
-          <p className="text-blue-700 text-sm mb-4">
-            Community members can suggest events for municipal approval. Submit your event proposal 
-            and help make our community more vibrant!
-          </p>
-          <Button variant="outline" className="border-blue-300 text-blue-700 hover:bg-blue-100">
-            Submit Event Proposal
-          </Button>
-        </div>
       </div>
     </div>
   );

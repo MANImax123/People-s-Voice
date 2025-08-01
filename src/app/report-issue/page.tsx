@@ -6,6 +6,7 @@ import Link from "next/link";
 import { metropolitanCities, issueCategories } from "@/lib/civic-data";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import GoogleMapsPicker from "@/components/google-maps-picker";
 
 interface FormData {
   title: string;
@@ -14,6 +15,10 @@ interface FormData {
   metropolitanCity: string;
   area: string;
   exactAddress: string;
+  coordinates?: {
+    lat: number;
+    lng: number;
+  };
   reporterName: string;
   reporterEmail: string;
   reporterPhone: string;
@@ -33,6 +38,7 @@ export default function ReportIssue() {
     metropolitanCity: "",
     area: "",
     exactAddress: "",
+    coordinates: undefined,
     reporterName: "",
     reporterEmail: "",
     reporterPhone: ""
@@ -44,6 +50,8 @@ export default function ReportIssue() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
   const [aiAnalysis, setAiAnalysis] = useState<AIAnalysisResult | null>(null);
+  const [showMapPicker, setShowMapPicker] = useState(false);
+  const [useMapLocation, setUseMapLocation] = useState(false);
   const router = useRouter();
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -93,6 +101,23 @@ export default function ReportIssue() {
     
     setPhotos(prev => prev.filter((_, i) => i !== index));
     setPhotoPreviews(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const handleMapLocationSelect = (coordinates: { lat: number; lng: number }, address: string) => {
+    setFormData(prev => ({
+      ...prev,
+      exactAddress: address,
+      coordinates: coordinates
+    }));
+    setShowMapPicker(false);
+    setUseMapLocation(true);
+  };
+
+  const toggleMapPicker = () => {
+    setShowMapPicker(!showMapPicker);
+    if (!showMapPicker) {
+      setUseMapLocation(true);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -415,20 +440,83 @@ export default function ReportIssue() {
                 </div>
               </div>
 
-              <div>
-                <label htmlFor="exactAddress" className="block text-sm font-medium text-gray-700 mb-2">
-                  Exact Address/Landmark *
-                </label>
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <label htmlFor="exactAddress" className="block text-sm font-medium text-gray-700">
+                    Exact Address/Landmark *
+                  </label>
+                  <div className="flex gap-2">
+                    <button
+                      type="button"
+                      onClick={toggleMapPicker}
+                      className={`px-3 py-1 text-xs rounded-lg transition-colors ${
+                        useMapLocation 
+                          ? 'bg-blue-600 text-white' 
+                          : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                      }`}
+                    >
+                      📍 Use Map
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setUseMapLocation(false);
+                        setShowMapPicker(false);
+                        setFormData(prev => ({ ...prev, coordinates: undefined }));
+                      }}
+                      className={`px-3 py-1 text-xs rounded-lg transition-colors ${
+                        !useMapLocation 
+                          ? 'bg-green-600 text-white' 
+                          : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                      }`}
+                    >
+                      ✏️ Manual Entry
+                    </button>
+                  </div>
+                </div>
+
+                {showMapPicker && process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY && 
+                 process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY !== 'your_google_maps_api_key_here' ? (
+                  <div className="border border-gray-300 rounded-lg p-4 bg-gray-50">
+                    <GoogleMapsPicker
+                      onLocationSelect={handleMapLocationSelect}
+                      apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}
+                    />
+                  </div>
+                ) : showMapPicker ? (
+                  <div className="p-4 bg-amber-50 border border-amber-200 rounded-lg">
+                    <h4 className="font-semibold text-amber-800 mb-2">🗺️ Interactive Map Not Available</h4>
+                    <p className="text-amber-700 text-sm mb-2">
+                      Google Maps requires API key setup for interactive location selection.
+                    </p>
+                    <div className="text-amber-600 text-xs bg-amber-100 p-2 rounded mb-2">
+                      <strong>Administrator:</strong> Please configure NEXT_PUBLIC_GOOGLE_MAPS_API_KEY in environment settings.
+                    </div>
+                    <p className="text-amber-600 text-sm font-medium">
+                      📍 Please use manual address entry below for now.
+                    </p>
+                  </div>
+                ) : null}
+
                 <Input
                   id="exactAddress"
                   type="text"
                   name="exactAddress"
                   value={formData.exactAddress}
                   onChange={handleInputChange}
-                  placeholder="Provide specific address or landmark"
+                  placeholder={useMapLocation ? "Select location using map above" : "Provide specific address or landmark"}
                   required
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  readOnly={useMapLocation}
+                  className={`w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                    useMapLocation ? 'bg-gray-50 cursor-not-allowed' : ''
+                  }`}
                 />
+
+                {formData.coordinates && (
+                  <div className="text-xs text-gray-600 bg-blue-50 p-2 rounded">
+                    📍 GPS Coordinates: {formData.coordinates.lat.toFixed(6)}, {formData.coordinates.lng.toFixed(6)}
+                  </div>
+                )}
               </div>
             </div>
 

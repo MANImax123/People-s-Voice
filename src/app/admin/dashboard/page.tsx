@@ -344,29 +344,6 @@ export default function AdminDashboard() {
                 </CardContent>
               </Card>
             </Link>
-            
-            {/* You can add more quick access cards here */}
-            <Card className="border-gray-200 bg-gray-50">
-              <CardHeader className="pb-3">
-                <CardTitle className="flex items-center gap-3 text-gray-500">
-                  <div className="bg-gray-400 p-2 rounded-lg">
-                    <FileText className="w-5 h-5 text-white" />
-                  </div>
-                  <span>Reports</span>
-                </CardTitle>
-                <CardDescription className="text-gray-600">
-                  Generate and view administrative reports
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-500">Coming soon</span>
-                  <Button variant="outline" size="sm" disabled>
-                    Open →
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
           </div>
         </div>
 

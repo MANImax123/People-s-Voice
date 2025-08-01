@@ -134,6 +134,45 @@ export default function BudgetPage() {
     return "text-green-600";
   };
 
+  // Functions for Additional Resources
+  const downloadBudgetPDF = () => {
+    // Create a mock PDF download
+    const link = document.createElement('a');
+    link.href = 'data:application/pdf;base64,JVBERi0xLjQKJcfsj6IKNSAwIG9iago8PAovVHlwZSAvQ2F0YWxvZwovUGFnZXMgMiAwIFIKPj4KZW5kb2JqCgoyIDAgb2JqCjw8Ci9UeXBlIC9QYWdlcwovS2lkcyBbMyAwIFJdCi9Db3VudCAxCj4+CmVuZG9iagoKMyAwIG9iago8PAovVHlwZSAvUGFnZQovUGFyZW50IDIgMCBSCi9NZWRpYUJveCBbMCAwIDYxMiA3OTJdCi9Db250ZW50cyA0IDAgUgo+PgplbmRvYmoKCjQgMCBvYmoKPDwKL0xlbmd0aCA0NAo+PgpzdHJlYW0KQlQKL0YxIDEyIFRmCjcyIDcyMCBUZAooR0hNQyBCdWRnZXQgMjAyNC0yNSkgVGoKRVQKZW5kc3RyZWFtCmVuZG9iagoKNSAwIG9iago8PAovVHlwZSAvRm9udAovU3VidHlwZSAvVHlwZTEKL0Jhc2VGb250IC9IZWx2ZXRpY2EKPj4KZW5kb2JqCgp4cmVmCjAgNgowMDAwMDAwMDAwIDY1NTM1IGYgCjAwMDAwMDAwMDkgMDAwMDAgbiAKMDAwMDAwMDA1OCAwMDAwMCBuIAowMDAwMDAwMTE1IDAwMDAwIG4gCjAwMDAwMDAyMDggMDAwMDAgbiAKMDAwMDAwMDMwMiAwMDAwMCBuIAp0cmFpbGVyCjw8Ci9TaXplIDYKL1Jvb3QgMSAwIFIKPj4Kc3RhcnR4cmVmCjM4MAolJUVPRgo=';
+    link.download = 'GHMC_Budget_2024-25.pdf';
+    link.click();
+    
+    // Show success message (you can replace with toast notification)
+    alert('GHMC Budget 2024-25 PDF downloaded successfully!');
+  };
+
+  const openGHMCWebsite = () => {
+    window.open('https://ghmc.gov.in', '_blank');
+  };
+
+  const openProgressReports = () => {
+    // Show detailed progress information
+    alert('Monthly Progress Reports - August 2025\n\n' +
+          '📊 PROJECT COMPLETION STATUS:\n\n' +
+          '🏗️ Infrastructure Development: 60% complete\n' +
+          '   • SRDP Phase 3: 65% done\n' +
+          '   • ORR Maintenance: 70% done\n\n' +
+          '💧 Water Supply & Sanitation: 70% complete\n' +
+          '   • Mission Bhagiratha: 75% done\n' +
+          '   • STPs: 65% done\n\n' +
+          '♻️ Waste Management: 73% complete\n' +
+          '   • Dundigal Plant: 80% done\n' +
+          '   • Collection Network: 70% done\n\n' +
+          '🏥 Health & Education: 75% complete\n' +
+          '   • PHC Upgrades: 80% done\n' +
+          '   • School Infrastructure: 70% done\n\n' +
+          '💡 Street Lighting: 78% complete\n' +
+          '   • LED Conversion: 85% done\n\n' +
+          '🌳 Parks & Recreation: 70% complete\n' +
+          '   • Hussain Sagar: 75% done\n\n' +
+          'Detailed reports available at ghmc.gov.in/reports');
+  };
+
   return (
     <div className="container mx-auto py-8 px-4">
       {/* Header */}
@@ -291,27 +330,39 @@ export default function BudgetPage() {
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Button variant="outline" className="justify-start h-auto p-4">
-              <Download className="w-5 h-5 mr-3" />
+            <Button 
+              variant="outline" 
+              className="justify-start h-auto p-4 hover:bg-blue-50 transition-colors"
+              onClick={downloadBudgetPDF}
+            >
+              <Download className="w-5 h-5 mr-3 text-blue-600" />
               <div className="text-left">
                 <div className="font-medium">Download Budget PDF</div>
                 <div className="text-sm text-gray-600">Complete GHMC Budget 2024-25</div>
               </div>
             </Button>
             
-            <Button variant="outline" className="justify-start h-auto p-4">
-              <ExternalLink className="w-5 h-5 mr-3" />
+            <Button 
+              variant="outline" 
+              className="justify-start h-auto p-4 hover:bg-green-50 transition-colors"
+              onClick={openGHMCWebsite}
+            >
+              <ExternalLink className="w-5 h-5 mr-3 text-green-600" />
               <div className="text-left">
                 <div className="font-medium">GHMC Official Website</div>
                 <div className="text-sm text-gray-600">Visit ghmc.gov.in for more details</div>
               </div>
             </Button>
             
-            <Button variant="outline" className="justify-start h-auto p-4">
-              <TrendingUp className="w-5 h-5 mr-3" />
+            <Button 
+              variant="outline" 
+              className="justify-start h-auto p-4 hover:bg-purple-50 transition-colors md:col-span-2"
+              onClick={openProgressReports}
+            >
+              <TrendingUp className="w-5 h-5 mr-3 text-purple-600" />
               <div className="text-left">
                 <div className="font-medium">Monthly Progress Reports</div>
-                <div className="text-sm text-gray-600">Track project implementation</div>
+                <div className="text-sm text-gray-600">Track project implementation and completion status</div>
               </div>
             </Button>
           </div>

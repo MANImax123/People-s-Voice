@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Building, Clock, MapPin, Phone, Globe, Search, Star } from "lucide-react";
+import { Building, Clock, MapPin, Phone, Globe, Search, Star, Navigation } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -219,6 +219,18 @@ export default function DirectoryPage() {
     ));
   };
 
+  const getDirections = (address: string, businessName: string) => {
+    // Format the address for Google Maps
+    const formattedAddress = encodeURIComponent(address);
+    const destination = encodeURIComponent(`${businessName}, ${address}`);
+    
+    // Create Google Maps directions URL
+    const googleMapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${destination}&travelmode=driving`;
+    
+    // Open in new tab
+    window.open(googleMapsUrl, '_blank');
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="container mx-auto px-4">
@@ -339,9 +351,14 @@ export default function DirectoryPage() {
                     )}
                   </div>
 
-                  <div className="pt-2">
-                    <Button size="sm" className="w-full bg-blue-600 hover:bg-blue-700">
-                      Contact Business
+                  <div className="pt-3">
+                    <Button 
+                      size="sm" 
+                      className="w-full bg-blue-600 hover:bg-blue-700 flex items-center gap-2"
+                      onClick={() => getDirections(business.address, business.name)}
+                    >
+                      <Navigation className="w-4 h-4" />
+                      Get Directions
                     </Button>
                   </div>
                 </div>

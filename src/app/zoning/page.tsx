@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { MapPin, Building, Ruler, Search, Home, Factory, Trees, Store } from "lucide-react";
+import { MapPin, Building, Ruler, Search, Home, Factory, Trees, Store, X, FileText, DollarSign, Calendar } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -136,6 +136,8 @@ export default function ZoningPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [filterType, setFilterType] = useState("all");
   const [filterHeight, setFilterHeight] = useState("all");
+  const [selectedZone, setSelectedZone] = useState(null);
+  const [showDetails, setShowDetails] = useState(false);
 
   const filteredZones = zoningData.filter(zone => {
     const matchesSearch = zone.zone.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -149,6 +151,16 @@ export default function ZoningPage() {
     
     return matchesSearch && matchesType && matchesHeight;
   });
+
+  const handleViewDetails = (zone) => {
+    setSelectedZone(zone);
+    setShowDetails(true);
+  };
+
+  const closeDetails = () => {
+    setShowDetails(false);
+    setSelectedZone(null);
+  };
 
   const getTypeColor = (type: string) => {
     switch (type.toLowerCase()) {
@@ -315,7 +327,11 @@ export default function ZoningPage() {
                   </div>
 
                   <div className="pt-2">
-                    <Button size="sm" className="w-full bg-blue-600 hover:bg-blue-700">
+                    <Button 
+                      size="sm" 
+                      className="w-full bg-blue-600 hover:bg-blue-700"
+                      onClick={() => handleViewDetails(zone)}
+                    >
                       View Zone Details
                     </Button>
                   </div>
@@ -328,6 +344,199 @@ export default function ZoningPage() {
         {filteredZones.length === 0 && (
           <div className="text-center py-12">
             <p className="text-gray-500 text-lg">No zoning information found matching your criteria.</p>
+          </div>
+        )}
+
+        {/* Zone Details Modal */}
+        {showDetails && selectedZone && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+            <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+              <div className="sticky top-0 bg-white border-b p-6 flex justify-between items-center">
+                <div>
+                  <h2 className="text-2xl font-bold text-gray-900">{selectedZone.zone}</h2>
+                  <Badge className={getTypeColor(selectedZone.type)} size="sm">
+                    <div className="flex items-center gap-1">
+                      {getTypeIcon(selectedZone.type)}
+                      {selectedZone.type}
+                    </div>
+                  </Badge>
+                </div>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={closeDetails}
+                  className="p-2"
+                >
+                  <X className="w-4 h-4" />
+                </Button>
+              </div>
+
+              <div className="p-6">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                  {/* Basic Information */}
+                  <div className="space-y-6">
+                    <div>
+                      <h3 className="text-lg font-semibold text-gray-900 mb-3 flex items-center gap-2">
+                        <FileText className="w-5 h-5 text-blue-600" />
+                        Basic Information
+                      </h3>
+                      <div className="bg-gray-50 rounded-lg p-4 space-y-3">
+                        <div>
+                          <label className="text-sm font-medium text-gray-700">Description</label>
+                          <p className="text-gray-900 mt-1">{selectedZone.description}</p>
+                        </div>
+                        <div>
+                          <label className="text-sm font-medium text-gray-700">Coverage Area</label>
+                          <p className="text-gray-900 mt-1">{selectedZone.area}</p>
+                        </div>
+                        <div>
+                          <label className="text-sm font-medium text-gray-700">Population</label>
+                          <p className="text-gray-900 mt-1">{selectedZone.population}</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Building Regulations */}
+                    <div>
+                      <h3 className="text-lg font-semibold text-gray-900 mb-3 flex items-center gap-2">
+                        <Building className="w-5 h-5 text-blue-600" />
+                        Building Regulations
+                      </h3>
+                      <div className="bg-gray-50 rounded-lg p-4 space-y-4">
+                        <div className="grid grid-cols-2 gap-4">
+                          <div>
+                            <label className="text-sm font-medium text-gray-700">Minimum Lot Size</label>
+                            <p className="text-gray-900 mt-1 font-semibold">{selectedZone.minLotSize}</p>
+                          </div>
+                          <div>
+                            <label className="text-sm font-medium text-gray-700">Height Limit</label>
+                            <p className="text-gray-900 mt-1 font-semibold">{selectedZone.heightLimit}</p>
+                          </div>
+                          <div>
+                            <label className="text-sm font-medium text-gray-700">Max Stories</label>
+                            <p className="text-gray-900 mt-1 font-semibold">{selectedZone.maxStories}</p>
+                          </div>
+                          <div>
+                            <label className="text-sm font-medium text-gray-700">Coverage</label>
+                            <p className="text-gray-900 mt-1 font-semibold">{selectedZone.coverage}</p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Setback Requirements */}
+                    <div>
+                      <h3 className="text-lg font-semibold text-gray-900 mb-3 flex items-center gap-2">
+                        <Ruler className="w-5 h-5 text-blue-600" />
+                        Setback Requirements
+                      </h3>
+                      <div className="bg-gray-50 rounded-lg p-4">
+                        <div className="grid grid-cols-1 gap-3">
+                          <div className="grid grid-cols-3 gap-2 text-center">
+                            <div className="bg-blue-100 p-3 rounded">
+                              <div className="text-sm text-gray-600 mb-1">Front</div>
+                              <div className="font-semibold text-blue-600">{selectedZone.setbacks.front}</div>
+                            </div>
+                            <div className="bg-green-100 p-3 rounded">
+                              <div className="text-sm text-gray-600 mb-1">Side</div>
+                              <div className="font-semibold text-green-600">{selectedZone.setbacks.side}</div>
+                            </div>
+                            <div className="bg-purple-100 p-3 rounded">
+                              <div className="text-sm text-gray-600 mb-1">Rear</div>
+                              <div className="font-semibold text-purple-600">{selectedZone.setbacks.rear}</div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Right Column */}
+                  <div className="space-y-6">
+                    {/* Allowed Uses */}
+                    <div>
+                      <h3 className="text-lg font-semibold text-gray-900 mb-3 flex items-center gap-2">
+                        <Store className="w-5 h-5 text-blue-600" />
+                        Permitted Uses
+                      </h3>
+                      <div className="bg-gray-50 rounded-lg p-4">
+                        <div className="grid grid-cols-1 gap-2">
+                          {selectedZone.allowedUses.map((use, index) => (
+                            <div 
+                              key={index} 
+                              className="flex items-center gap-2 p-2 bg-white rounded border border-gray-200"
+                            >
+                              <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                              <span className="text-gray-900">{use}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Parking Requirements */}
+                    <div>
+                      <h3 className="text-lg font-semibold text-gray-900 mb-3 flex items-center gap-2">
+                        <MapPin className="w-5 h-5 text-blue-600" />
+                        Parking Requirements
+                      </h3>
+                      <div className="bg-gray-50 rounded-lg p-4">
+                        <p className="text-gray-900 font-semibold text-lg">{selectedZone.parkingReq}</p>
+                        <p className="text-gray-600 text-sm mt-1">
+                          Minimum parking spaces required per development unit
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Additional Information */}
+                    <div>
+                      <h3 className="text-lg font-semibold text-gray-900 mb-3 flex items-center gap-2">
+                        <Calendar className="w-5 h-5 text-blue-600" />
+                        Additional Information
+                      </h3>
+                      <div className="bg-gray-50 rounded-lg p-4 space-y-3">
+                        <div>
+                          <label className="text-sm font-medium text-gray-700">Zone Type Classification</label>
+                          <p className="text-gray-900 mt-1">{selectedZone.type} Zone</p>
+                        </div>
+                        <div>
+                          <label className="text-sm font-medium text-gray-700">Regulatory Authority</label>
+                          <p className="text-gray-900 mt-1">Greater Hyderabad Municipal Corporation (GHMC)</p>
+                        </div>
+                        <div>
+                          <label className="text-sm font-medium text-gray-700">Last Updated</label>
+                          <p className="text-gray-900 mt-1">Master Plan 2031 - Current Regulations</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Action Buttons */}
+                    <div className="grid grid-cols-2 gap-3">
+                      <Button variant="outline" className="w-full">
+                        Download Regulations
+                      </Button>
+                      <Button variant="outline" className="w-full">
+                        Contact GHMC
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Footer */}
+                <div className="mt-8 pt-6 border-t border-gray-200">
+                  <div className="bg-blue-50 rounded-lg p-4">
+                    <h4 className="font-semibold text-blue-900 mb-2">📋 Important Notes:</h4>
+                    <ul className="text-blue-800 text-sm space-y-1">
+                      <li>• All construction must comply with current GHMC building regulations</li>
+                      <li>• Building permits are required before starting any construction</li>
+                      <li>• Setback requirements are measured from property boundaries</li>
+                      <li>• Zoning regulations are subject to periodic updates</li>
+                      <li>• For specific queries, contact GHMC Planning Department</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         )}
       </div>
