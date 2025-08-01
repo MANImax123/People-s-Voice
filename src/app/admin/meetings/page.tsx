@@ -9,7 +9,7 @@ import { ArrowLeft, Calendar } from 'lucide-react';
 import Link from 'next/link';
 
 export default function AdminMeetingsPage() {
-  const [admin, setAdmin] = useState(null);
+  const [admin, setAdmin] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 

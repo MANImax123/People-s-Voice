@@ -42,43 +42,17 @@ export default function MenuBar() {
 
   const isActivePath = (path: string) => pathname === path;
 
-  const quickAccessMenu = {
-    events: {
-      title: "City Events",
-      icon: <Calendar className="w-4 h-4" />,
-      items: [
-        { name: "Summer Music Festival", description: "", time: "July 15-17, 2025" },
-        { name: "Food Truck Fair", description: "", time: "August 5, 2025" }
-      ]
-    },
-    business: {
-      title: "Business Directory",
-      icon: <Building className="w-4 h-4" />,
-      items: [
-        { name: "City Hospital", description: "", time: "Open 24/7" },
-        { name: "Central Library", description: "", time: "Mon-Sat: 9 AM - 8 PM" }
-      ]
-    },
-    zoning: {
-      title: "Zoning Information",
-      icon: <MapPinIcon className="w-4 h-4" />,
-      items: [
-        { name: "Residential Zone R1", description: "", time: "Height limit: 35 ft" },
-        { name: "Commercial Zone C1", description: "", time: "Height limit: 60 ft" }
-      ]
-    }
-  };
-
   const navigationItems = [
     { href: "/", label: "Dashboard", icon: <Lightbulb className="w-4 h-4" /> },
+    { href: "/report-issue", label: "Report Issue", icon: <FileText className="w-4 h-4" /> },
     { href: "/transportation", label: "Transportation", icon: <Bus className="w-4 h-4" /> },
     { href: "/events", label: "Events", icon: <Calendar className="w-4 h-4" /> },
-    { href: "/meetings", label: "Meeting Requests", icon: <Calendar className="w-4 h-4" /> },
+    { href: "/meetings", label: "Meeting Requests", icon: <Clock className="w-4 h-4" /> },
     { href: "/directory", label: "Business Directory", icon: <Building className="w-4 h-4" /> },
     { href: "/zoning", label: "Zoning", icon: <MapPinIcon className="w-4 h-4" /> },
     { href: "/voting", label: "Voting", icon: <Vote className="w-4 h-4" /> },
     { href: "/payments", label: "Bill Payments", icon: <CreditCard className="w-4 h-4" /> },
-    { href: "/help", label: "Help & Support", icon: <HelpCircle className="w-4 h-4" /> },
+    { href: "/budget", label: "Budget Transparency", icon: <Settings className="w-4 h-4" /> },
   ];
 
   const techItems = [
@@ -254,45 +228,6 @@ export default function MenuBar() {
                 <span className="font-medium">{item.label}</span>
               </Link>
             ))}
-          </div>
-
-          {/* Quick Access Services */}
-          <div className="mt-8">
-            <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-4">Quick Access</h3>
-            <div className="space-y-2">
-              {Object.entries(quickAccessMenu).map(([key, menu]) => {
-                const getPageUrl = (key: string) => {
-                  switch (key) {
-                    case 'events':
-                      return '/events';
-                    case 'business':
-                      return '/directory';
-                    case 'zoning':
-                      return '/zoning';
-                    default:
-                      return '/';
-                  }
-                };
-
-                return (
-                  <Link
-                    key={key}
-                    href={getPageUrl(key)}
-                    onClick={toggleSideMenu}
-                    className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 hover:bg-white/10 ${
-                      isActivePath(getPageUrl(key))
-                        ? 'bg-blue-600 text-white font-semibold'
-                        : 'text-gray-300 hover:text-white'
-                    }`}
-                  >
-                    <div className="text-blue-400">
-                      {menu.icon}
-                    </div>
-                    <span className="font-medium">{menu.title}</span>
-                  </Link>
-                );
-              })}
-            </div>
           </div>
 
           {/* User Profile Section */}

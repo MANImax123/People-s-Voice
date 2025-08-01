@@ -3,6 +3,7 @@ import connectMongoDB from '@/lib/mongodb';
 import Issue from '@/models/IssueFull';
 import Tech from '@/models/Tech';
 import mongoose from 'mongoose';
+import { sendIssueResolvedEmail } from '@/lib/email';
 
 export async function PATCH(
   request: NextRequest,
@@ -67,7 +68,23 @@ export async function PATCH(
     // Send notification for resolved issues
     if (status === 'resolved' && updatedIssue.reportedBy?.email) {
       console.log('✅ Issue resolved:', updatedIssue.title);
-      console.log('📧 Notification sent to:', updatedIssue.reportedBy.email);
+      console.log('📧 Sending notification to:', updatedIssue.reportedBy.email);
+      
+      try {
+        const emailResult = await sendIssueResolvedEmail(
+          updatedIssue.reportedBy.email,
+          updatedIssue.title,
+          issueId
+        );
+        
+        if (emailResult.success) {
+          console.log('✅ Email sent successfully:', emailResult.messageId);
+        } else {
+          console.error('❌ Failed to send email:', emailResult.error);
+        }
+      } catch (emailError) {
+        console.error('❌ Error sending email:', emailError);
+      }
     }
 
     return NextResponse.json({

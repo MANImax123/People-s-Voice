@@ -66,11 +66,6 @@ export default function Footer() {
                   Voting
                 </Link>
               </li>
-              <li>
-                <Link href="/feedback" className="text-blue-200 hover:text-white transition-colors duration-200">
-                  Feedback
-                </Link>
-              </li>
             </ul>
           </div>
 

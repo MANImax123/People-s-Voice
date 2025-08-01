@@ -2,10 +2,15 @@ import { NextRequest, NextResponse } from 'next/server';
 import dbConnect from '@/lib/mongodb';
 import MeetingRequest from '@/models/MeetingRequest';
 import User from '@/models/User';
+import Admin from '@/models/Admin';
 
 export async function POST(request: NextRequest) {
   try {
     await dbConnect();
+    
+    // Ensure User and Admin models are registered
+    User;
+    Admin;
     
     const {
       userId,
@@ -80,6 +85,10 @@ export async function GET(request: NextRequest) {
   try {
     await dbConnect();
     
+    // Ensure User and Admin models are registered
+    User;
+    Admin;
+    
     const { searchParams } = new URL(request.url);
     const userId = searchParams.get('userId');
     const status = searchParams.get('status');
@@ -96,8 +105,16 @@ export async function GET(request: NextRequest) {
     }
 
     const meetingRequests = await MeetingRequest.find(filter)
-      .populate('userId', 'name email phone')
-      .populate('adminId', 'name email')
+      .populate({
+        path: 'userId',
+        model: User,
+        select: 'name email phone'
+      })
+      .populate({
+        path: 'adminId', 
+        model: Admin,
+        select: 'name email'
+      })
       .sort({ createdAt: -1 })
       .limit(isAdmin ? 100 : 50);
 

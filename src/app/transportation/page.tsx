@@ -9,110 +9,221 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 
 const transportationData = [
+  // Hyderabad Metro Lines
   {
     id: 1,
-    type: "Bus",
-    route: "Route 15",
-    name: "City Center - Airport",
-    frequency: "Every 20 mins",
+    type: "Metro",
+    route: "Blue Line",
+    name: "Nagole - Raidurg",
+    frequency: "Every 4-6 mins",
     hours: "6:00 AM - 11:00 PM",
     status: "Active",
-    stops: ["City Center", "Main Plaza", "University", "Shopping Mall", "Airport"],
-    fare: "$2.50",
+    stops: ["Nagole", "Uppal", "Stadium", "Gandhi Hospital", "Secunderabad East", "Parade Ground", "Secunderabad West", "Begumpet", "Ameerpet", "Panjagutta", "Lakdi-ka-pul", "Assembly", "Nampally", "Gandhi Bhavan", "Osmania Medical College", "MG Bus Station", "Malakpet", "New Market", "Musarambagh", "Dilsukhnagar", "Chaitanyapuri", "Victoria Memorial", "LB Nagar"],
+    fare: "₹10-60",
     accessibility: true
   },
   {
     id: 2,
     type: "Metro",
-    route: "Blue Line",
-    name: "Downtown - University",
-    frequency: "Every 5 mins",
-    hours: "5:30 AM - 12:00 AM",
+    route: "Red Line",
+    name: "LB Nagar - Miyapur",
+    frequency: "Every 4-6 mins",
+    hours: "6:00 AM - 11:00 PM",
     status: "Active",
-    stops: ["Downtown Central", "Business District", "Park Avenue", "University Campus"],
-    fare: "$3.00",
+    stops: ["LB Nagar", "Victoria Memorial", "Chaitanyapuri", "Dilsukhnagar", "Moosarambagh", "New Market", "Malakpet", "MG Bus Station", "Osmania Medical College", "Gandhi Bhavan", "Nampally", "Assembly", "Lakdi-ka-pul", "Kacheguda", "Malakpet", "Ameerpet", "Erragadda", "Bharat Nagar", "Moosapet", "DR BR Ambedkar Balanagar", "Kukatpally", "KPHB Colony", "JNTU College", "Miyapur"],
+    fare: "₹10-60",
     accessibility: true
   },
   {
     id: 3,
-    type: "Shuttle",
-    route: "Hospital Shuttle",
-    name: "Hospital - Medical Center",
-    frequency: "Every 30 mins",
-    hours: "7:00 AM - 9:00 PM",
+    type: "Metro",
+    route: "Green Line",
+    name: "Nagole - JBS",
+    frequency: "Every 6-8 mins",
+    hours: "6:00 AM - 11:00 PM",
     status: "Active",
-    stops: ["City Hospital", "Medical Plaza", "Pharmacy District", "Health Center"],
-    fare: "Free",
+    stops: ["Nagole", "Mettuguda", "Tarnaka", "Habsiguda", "Alugadda Bhavi", "Musheerabad", "Gandhi Hospital", "Secunderabad West", "Parade Ground", "Secunderabad East", "New Market", "Malakpet", "MG Bus Station"],
+    fare: "₹10-45",
     accessibility: true
   },
+  
+  // TSRTC City Bus Routes
   {
     id: 4,
     type: "Bus",
-    route: "Night Bus N1",
-    name: "Main Street Loop",
-    frequency: "Every hour",
-    hours: "11:00 PM - 5:00 AM",
+    route: "Route 8A",
+    name: "Secunderabad - Kondapur",
+    frequency: "Every 10-15 mins",
+    hours: "5:30 AM - 11:30 PM",
     status: "Active",
-    stops: ["Main Street", "Entertainment District", "Residential Area", "Transit Hub"],
-    fare: "$3.50",
-    accessibility: false
+    stops: ["Secunderabad Bus Station", "Trimulgherry", "Begumpet", "Greenlands", "Panjagutta", "Ameerpet", "SR Nagar", "Erragadda", "Nizampet", "Kukatpally", "JNTU", "Kondapur"],
+    fare: "₹8-25",
+    accessibility: true
   },
   {
     id: 5,
     type: "Bus",
-    route: "Route 22",
-    name: "North - South Corridor",
-    frequency: "Every 15 mins",
-    hours: "6:30 AM - 10:30 PM",
+    route: "Route 49M",
+    name: "Mehdipatnam - Secunderabad",
+    frequency: "Every 8-12 mins",
+    hours: "5:00 AM - 11:45 PM",
     status: "Active",
-    stops: ["North Terminal", "Commercial Center", "City Hall", "South Station"],
-    fare: "$2.50",
+    stops: ["Mehdipatnam", "Tolichowki", "Shaikpet", "Golconda", "Langar Houz", "Masab Tank", "Lakdi-ka-pul", "Abids", "Koti", "Sultan Bazar", "Musheerabad", "Secunderabad"],
+    fare: "₹10-28",
     accessibility: true
   },
   {
     id: 6,
-    type: "Metro",
-    route: "Red Line",
-    name: "East - West Line",
-    frequency: "Every 7 mins",
-    hours: "5:45 AM - 11:45 PM",
-    status: "Maintenance",
-    stops: ["East Gateway", "Central Station", "West Plaza", "Industrial Zone"],
-    fare: "$3.00",
+    type: "Bus",
+    route: "Route 216",
+    name: "MGBS - Gachibowli",
+    frequency: "Every 12-18 mins",
+    hours: "5:45 AM - 10:30 PM",
+    status: "Active",
+    stops: ["Mahatma Gandhi Bus Station", "Chaderghat", "Malakpet", "Dilsukhnagar", "Vanasthalipuram", "LB Nagar", "Hayathnagar", "Uppal", "Kompally", "Gachibowli"],
+    fare: "₹12-35",
     accessibility: true
   },
   {
     id: 7,
     type: "Bus",
-    route: "Route 8",
-    name: "Suburban Express",
-    frequency: "Every 25 mins",
-    hours: "7:00 AM - 9:00 PM",
+    route: "Route 5K",
+    name: "Secunderabad - Charminar",
+    frequency: "Every 15-20 mins",
+    hours: "5:30 AM - 11:00 PM",
     status: "Active",
-    stops: ["Suburb Center", "School District", "Shopping Center", "Downtown"],
-    fare: "$4.00",
-    accessibility: true
+    stops: ["Secunderabad", "Patny", "Musheerabad", "Gandhihospital", "Nampally", "Abids", "Koti", "Sultan Bazar", "Madina Building", "Charminar"],
+    fare: "₹8-20",
+    accessibility: false
   },
   {
     id: 8,
-    type: "Shuttle",
-    route: "Campus Shuttle",
-    name: "University Campus Loop",
-    frequency: "Every 10 mins",
-    hours: "7:00 AM - 11:00 PM",
+    type: "Bus",
+    route: "Route 158",
+    name: "JNTU - Shamshabad Airport",
+    frequency: "Every 30-45 mins",
+    hours: "4:00 AM - 11:30 PM",
     status: "Active",
-    stops: ["Main Campus", "Library", "Student Housing", "Sports Complex"],
+    stops: ["JNTU", "Kukatpally", "Miyapur", "Lingampally", "Gachibowli", "Financial District", "Aramgarh", "Shamshabad Airport"],
+    fare: "₹25-95",
+    accessibility: true
+  },
+  
+  // Special Services
+  {
+    id: 9,
+    type: "Shuttle",
+    route: "Airport Shuttle",
+    name: "Rajiv Gandhi International Airport Express",
+    frequency: "Every 45 mins",
+    hours: "24/7",
+    status: "Active",
+    stops: ["Shamshabad Airport", "Financial District", "Gachibowli", "Hi-Tech City", "Kukatpally", "Secunderabad"],
+    fare: "₹250",
+    accessibility: true
+  },
+  {
+    id: 10,
+    type: "Bus",
+    route: "Route 102",
+    name: "HITEC City - Kondapur",
+    frequency: "Every 8-10 mins",
+    hours: "6:00 AM - 10:30 PM",
+    status: "Active",
+    stops: ["HITEC City", "Cyber Gateway", "Madhapur", "Jubilee Hills", "Banjara Hills", "Panjagutta", "Ameerpet", "Kondapur"],
+    fare: "₹10-22",
+    accessibility: true
+  },
+  {
+    id: 11,
+    type: "Metro",
+    route: "Airport Express",
+    name: "Nagole - Shamshabad Airport",
+    frequency: "Every 15-20 mins",
+    hours: "5:00 AM - 11:00 PM",
+    status: "Under Construction",
+    stops: ["Nagole", "LB Nagar", "Shamshirpet", "Kandukur", "Shamshabad Airport"],
+    fare: "₹15-80",
+    accessibility: true
+  },
+  
+  // Inter-city Services
+  {
+    id: 12,
+    type: "Bus",
+    route: "Route 279",
+    name: "Hyderabad - Warangal Express",
+    frequency: "Every 2 hours",
+    hours: "5:00 AM - 11:00 PM",
+    status: "Active",
+    stops: ["MGBS", "Uppal", "Ghatkesar", "Bhongir", "Aler", "Warangal"],
+    fare: "₹85-120",
+    accessibility: true
+  },
+  {
+    id: 13,
+    type: "Bus",
+    route: "Route 555",
+    name: "Hyderabad - Vijayawada Volvo",
+    frequency: "Every 3 hours",
+    hours: "5:30 AM - 11:30 PM",
+    status: "Active",
+    stops: ["MGBS", "Outer Ring Road", "Suryapet", "Miryalaguda", "Kodad", "Vijayawada"],
+    fare: "₹280-450",
+    accessibility: true
+  },
+  
+  // Local Area Shuttles
+  {
+    id: 14,
+    type: "Shuttle",
+    route: "HITEC Shuttle",
+    name: "HITEC City Internal Shuttle",
+    frequency: "Every 10 mins",
+    hours: "7:00 AM - 10:00 PM",
+    status: "Active",
+    stops: ["HITEC City Metro", "Cyber Towers", "DLF", "Mindspace", "Raheja Mindspace", "Microsoft Campus", "Google Campus"],
     fare: "Free",
+    accessibility: true
+  },
+  {
+    id: 15,
+    type: "Bus",
+    route: "Route 10H",
+    name: "Jubilee Hills - Banjara Hills Circle",
+    frequency: "Every 20 mins",
+    hours: "6:30 AM - 10:00 PM",
+    status: "Active",
+    stops: ["Jubilee Hills Check Post", "Film Nagar", "Shaikpet", "Tolichowki", "Mehdipatnam", "Masab Tank", "Banjara Hills"],
+    fare: "₹8-18",
+    accessibility: false
+  },
+  
+  // Night Services
+  {
+    id: 16,
+    type: "Bus",
+    route: "Night Rider N1",
+    name: "Secunderabad - Gachibowli Night Service",
+    frequency: "Every 60 mins",
+    hours: "11:30 PM - 5:30 AM",
+    status: "Active",
+    stops: ["Secunderabad", "Begumpet", "Ameerpet", "Panjagutta", "Jubilee Hills", "Madhapur", "Gachibowli"],
+    fare: "₹25-45",
     accessibility: true
   }
 ];
 
-// Common locations for dropdown selection
+// Common locations for dropdown selection - Hyderabad
 const commonLocations = [
-  "City Center", "Downtown Central", "Airport", "University Campus", "Hospital",
-  "Shopping Mall", "Business District", "Main Plaza", "Industrial Zone",
-  "Suburb Center", "East Gateway", "West Plaza", "Park Avenue", "Sports Complex",
-  "Library", "Medical Plaza", "Student Housing", "Central Station"
+  "Secunderabad", "MGBS (Mahatma Gandhi Bus Station)", "Charminar", "HITEC City", "Gachibowli", 
+  "Begumpet", "Ameerpet", "Panjagutta", "Jubilee Hills", "Banjara Hills", "Kondapur", "Kukatpally",
+  "Dilsukhnagar", "LB Nagar", "Uppal", "Nagole", "Miyapur", "Shamshabad Airport", "Madhapur",
+  "Financial District", "Mehdipatnam", "Abids", "Koti", "Sultan Bazar", "Musheerabad", "Lakdi-ka-pul",
+  "Assembly", "Nampally", "Gandhi Hospital", "Parade Ground", "Tarnaka", "Habsiguda", "Mettuguda",
+  "Erragadda", "SR Nagar", "JNTU", "Nizampet", "Kompally", "Patancheru", "Shamirpet", "Bhongir",
+  "Warangal", "Vijayawada", "Film Nagar", "Tolichowki", "Masab Tank", "Osmania University",
+  "Central University", "ISB", "IIIT Hyderabad", "Cyber Gateway", "Mindspace", "DLF Cyber City"
 ];
 
 export default function TransportationPage() {
@@ -186,12 +297,16 @@ export default function TransportationPage() {
       );
       
       if (connectingRoutes.length > 0) {
+        const firstRouteFare = parseFloat(firstRoute.fare.replace('₹', '').split('-')[0]) || 0;
+        const secondRouteFare = parseFloat(connectingRoutes[0].fare.replace('₹', '').split('-')[0]) || 0;
+        const totalFare = firstRouteFare + secondRouteFare;
+        
         connectionRoutes.push({
           id: `multi-${firstRoute.id}-${connectingRoutes[0].id}`,
           type: "Multi-Modal",
           routes: [firstRoute, connectingRoutes[0]],
           totalTime: calculateTravelTime(firstRoute, from, "") + calculateTravelTime(connectingRoutes[0], "", to) + 5,
-          totalCost: `$${(parseFloat(firstRoute.fare.replace('$', '')) + parseFloat(connectingRoutes[0].fare.replace('$', ''))).toFixed(2)}`,
+          totalCost: totalFare > 0 ? `₹${totalFare}` : "Free",
           transfers: 1,
           accessibility: firstRoute.accessibility && connectingRoutes[0].accessibility,
           aiRating: 85,
@@ -233,6 +348,8 @@ export default function TransportationPage() {
       case "bus": return <Bus className="w-5 h-5" />;
       case "metro": return <div className="w-5 h-5 bg-blue-600 rounded-full flex items-center justify-center"><span className="text-white text-xs font-bold">M</span></div>;
       case "shuttle": return <div className="w-5 h-5 bg-green-600 rounded-full flex items-center justify-center"><span className="text-white text-xs font-bold">S</span></div>;
+      case "tsrtc": return <div className="w-5 h-5 bg-red-600 rounded-full flex items-center justify-center"><span className="text-white text-xs font-bold">T</span></div>;
+      case "express": return <div className="w-5 h-5 bg-purple-600 rounded-full flex items-center justify-center"><span className="text-white text-xs font-bold">E</span></div>;
       default: return <Bus className="w-5 h-5" />;
     }
   };
@@ -242,8 +359,8 @@ export default function TransportationPage() {
       <div className="container mx-auto px-4">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">Public Transportation</h1>
-          <p className="text-xl text-gray-600">Real-time schedules, routes, and transportation information</p>
+          <h1 className="text-4xl font-bold text-gray-900 mb-4">Hyderabad Public Transportation</h1>
+          <p className="text-xl text-gray-600">Real-time schedules, routes, and transportation information for Hyderabad Metro & TSRTC buses</p>
         </div>
 
         {/* AI Route Planner */}
@@ -254,7 +371,7 @@ export default function TransportationPage() {
             </div>
             <div>
               <h2 className="text-2xl font-bold">AI Route Planner</h2>
-              <p className="text-blue-100">Get optimal routes with real-time AI analysis</p>
+              <p className="text-blue-100">Get optimal routes across Hyderabad Metro, TSRTC buses & shuttles with real-time AI analysis</p>
             </div>
             <Button
               variant="outline"

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import dbConnect from '@/lib/mongodb';
 import MeetingRequest from '@/models/MeetingRequest';
 import nodemailer from 'nodemailer';
+import mongoose from 'mongoose';
 
 // Email configuration
 const transporter = nodemailer.createTransport({
@@ -20,7 +21,7 @@ export async function POST(request: NextRequest) {
     
     const { requestId, action, adminId, adminResponse } = await request.json();
 
-    if (!requestId || !action || !adminId) {
+    if (!requestId || !action) {
       return NextResponse.json(
         { error: 'Missing required fields' },
         { status: 400 }
@@ -52,7 +53,12 @@ export async function POST(request: NextRequest) {
 
     // Update meeting request
     meetingRequest.status = action === 'approve' ? 'approved' : 'rejected';
-    meetingRequest.adminId = adminId;
+    
+    // Only set adminId if it's a valid ObjectId, otherwise leave it undefined
+    if (adminId && adminId !== 'admin_default' && mongoose.Types.ObjectId.isValid(adminId)) {
+      meetingRequest.adminId = adminId;
+    }
+    
     meetingRequest.adminResponse = adminResponse || '';
     meetingRequest.approvedDate = action === 'approve' ? new Date() : undefined;
 
@@ -60,6 +66,10 @@ export async function POST(request: NextRequest) {
 
     // Send email notification to user
     try {
+      console.log('📧 Attempting to send email to:', meetingRequest.userEmail);
+      console.log('📧 Email User Config:', process.env.EMAIL_USER);
+      console.log('📧 Email Pass Available:', !!process.env.EMAIL_PASS);
+
       const emailSubject = action === 'approve' 
         ? '✅ Your Meeting Request has been Approved!'
         : '❌ Your Meeting Request Update';
@@ -128,15 +138,24 @@ export async function POST(request: NextRequest) {
         </div>
         `;
 
-      await transporter.sendMail({
+      console.log('📧 Sending email with subject:', emailSubject);
+      
+      const emailResult = await transporter.sendMail({
         from: process.env.EMAIL_USER,
         to: meetingRequest.userEmail,
         subject: emailSubject,
         html: emailContent,
       });
 
-    } catch (emailError) {
-      console.error('Error sending email:', emailError);
+      console.log('✅ Email sent successfully:', emailResult.messageId);
+
+    } catch (emailError: any) {
+      console.error('❌ Error sending email:', emailError);
+      console.error('📧 Full email error details:', {
+        error: emailError?.message || 'Unknown error',
+        code: emailError?.code || 'No code',
+        response: emailError?.response || 'No response'
+      });
       // Don't fail the request if email fails
     }
 
