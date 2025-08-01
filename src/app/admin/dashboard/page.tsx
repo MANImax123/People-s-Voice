@@ -317,6 +317,59 @@ export default function AdminDashboard() {
           </Card>
         </div>
 
+        {/* Quick Access Section */}
+        <div className="mb-8">
+          <h2 className="text-xl font-semibold text-gray-900 mb-4">Quick Access</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <Link href="/admin/meetings">
+              <Card className="hover:shadow-lg transition-shadow duration-200 cursor-pointer border-blue-200 bg-gradient-to-br from-blue-50 to-indigo-50">
+                <CardHeader className="pb-3">
+                  <CardTitle className="flex items-center gap-3">
+                    <div className="bg-blue-500 p-2 rounded-lg">
+                      <Calendar className="w-5 h-5 text-white" />
+                    </div>
+                    <span className="text-blue-900">Meeting Requests</span>
+                  </CardTitle>
+                  <CardDescription className="text-blue-700">
+                    Review and manage citizen meeting requests with municipal officials
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-blue-600">Click to manage</span>
+                    <Button variant="outline" size="sm" className="border-blue-300 text-blue-700 hover:bg-blue-100">
+                      Open →
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            </Link>
+            
+            {/* You can add more quick access cards here */}
+            <Card className="border-gray-200 bg-gray-50">
+              <CardHeader className="pb-3">
+                <CardTitle className="flex items-center gap-3 text-gray-500">
+                  <div className="bg-gray-400 p-2 rounded-lg">
+                    <FileText className="w-5 h-5 text-white" />
+                  </div>
+                  <span>Reports</span>
+                </CardTitle>
+                <CardDescription className="text-gray-600">
+                  Generate and view administrative reports
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-gray-500">Coming soon</span>
+                  <Button variant="outline" size="sm" disabled>
+                    Open →
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+
         {/* Tabs */}
         <Tabs defaultValue="unassigned" className="w-full">
           <TabsList className="grid w-full grid-cols-3">

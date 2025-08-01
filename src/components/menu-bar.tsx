@@ -73,6 +73,7 @@ export default function MenuBar() {
     { href: "/", label: "Dashboard", icon: <Lightbulb className="w-4 h-4" /> },
     { href: "/transportation", label: "Transportation", icon: <Bus className="w-4 h-4" /> },
     { href: "/events", label: "Events", icon: <Calendar className="w-4 h-4" /> },
+    { href: "/meetings", label: "Meeting Requests", icon: <Calendar className="w-4 h-4" /> },
     { href: "/directory", label: "Business Directory", icon: <Building className="w-4 h-4" /> },
     { href: "/zoning", label: "Zoning", icon: <MapPinIcon className="w-4 h-4" /> },
     { href: "/voting", label: "Voting", icon: <Vote className="w-4 h-4" /> },
