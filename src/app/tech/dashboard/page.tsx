@@ -51,12 +51,12 @@ export default function TechDashboard() {
     console.log('Auth data from localStorage:', authData);
     
     if (!authData) {
-      console.warn('No tech auth data found, using fallback tech ID');
-      // Set a default tech object for demo purposes
+      console.warn('No tech auth data found, using actual tech ID from database');
+      // Use the actual tech ID from your database instead of hardcoded fallback
       setTech({ 
-        _id: "6887aa0a3806e0cac0913572",
-        name: "Demo Tech",
-        email: "demo@tech.com",
+        _id: "689f39350d8eef525f1b4651", // Real tech ID from database
+        name: "Maniteja Lenkalapelly",
+        email: "lenkalapellymaniteja@gmail.com",
         phone: "123-456-7890",
         specialization: "General",
         experience: "5 years"
@@ -73,11 +73,11 @@ export default function TechDashboard() {
       loadIssues();
     } catch (error) {
       console.error('Error parsing auth data:', error);
-      // Set fallback tech data instead of redirecting
+      // Set actual tech data instead of fallback
       setTech({ 
-        _id: "6887aa0a3806e0cac0913572",
-        name: "Demo Tech",
-        email: "demo@tech.com",
+        _id: "689f39350d8eef525f1b4651", // Real tech ID from database
+        name: "Maniteja Lenkalapelly",
+        email: "lenkalapellymaniteja@gmail.com",
         phone: "123-456-7890",
         specialization: "General",
         experience: "5 years"
@@ -91,17 +91,36 @@ export default function TechDashboard() {
   const loadIssues = async () => {
     setIssuesLoading(true);
     try {
-      const techId = tech?._id || tech?.id || "6887aa0a3806e0cac0913572"; // Fallback to demo tech ID
+      // Get tech ID from authenticated user or fallback
+      let techId = tech?._id || tech?.id;
+      
+      // If no tech ID from auth, try to get from localStorage
       if (!techId) {
-        console.error('No tech ID available');
-        return;
+        const authData = localStorage.getItem('techAuth');
+        if (authData) {
+          try {
+            const parsedAuth = JSON.parse(authData);
+            techId = parsedAuth.tech?._id || parsedAuth.tech?.id || parsedAuth.technicianId;
+          } catch (e) {
+            console.error('Error parsing auth data:', e);
+          }
+        }
       }
+      
+      // Last resort fallback - use actual tech ID from database
+      if (!techId) {
+        techId = "689f39350d8eef525f1b4651"; // Real tech ID instead of old fallback
+        console.warn('Using actual tech ID from database:', techId);
+      }
+      
+      console.log('Loading issues for tech ID:', techId);
 
       const response = await fetch(`/api/technician/tasks?techId=${techId}`);
       if (response.ok) {
         const data = await response.json();
         const assignedIssues = data.issues || [];
         
+        console.log('Fetched assigned issues:', assignedIssues.length);
         setIssues(assignedIssues);
         calculateStats(assignedIssues);
         

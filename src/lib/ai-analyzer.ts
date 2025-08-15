@@ -12,13 +12,24 @@ interface AnalysisResult {
 }
 
 export class CivicIssueAnalyzer {
-  private genAI: GoogleGenerativeAI;
+  private genAI: GoogleGenerativeAI | null;
+  private hasValidApiKey: boolean;
 
   constructor() {
-    if (!process.env.GEMINI_API_KEY) {
-      throw new Error('GEMINI_API_KEY is required for AI analysis');
+    this.hasValidApiKey = !!process.env.GEMINI_API_KEY;
+    
+    if (this.hasValidApiKey) {
+      try {
+        this.genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
+      } catch (error) {
+        console.warn('Failed to initialize Gemini AI:', error);
+        this.hasValidApiKey = false;
+        this.genAI = null;
+      }
+    } else {
+      console.log('GEMINI_API_KEY not found - using fallback analysis only');
+      this.genAI = null;
     }
-    this.genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
   }
 
   async analyzeIssue(
@@ -28,6 +39,12 @@ export class CivicIssueAnalyzer {
     photos: Array<{ data: string; mimetype: string; filename: string }>,
     location: { metropolitanCity: string; area: string; exactAddress: string }
   ): Promise<AnalysisResult> {
+    // If no valid API key, use fallback analysis immediately
+    if (!this.hasValidApiKey || !this.genAI) {
+      console.log('Using fallback analysis (no valid Gemini API key)');
+      return this.fallbackAnalysis(title, description, category);
+    }
+
     try {
       const model = this.genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
 
