@@ -86,10 +86,10 @@ export default function MenuBar() {
                 </div>
                 <div className="flex flex-col">
                   <span className="font-bold text-xl bg-gradient-to-r from-white to-blue-100 bg-clip-text text-transparent">
-                    People's Voice
+                    CivicConnect
                   </span>
                   <span className="text-xs text-blue-200 font-medium">
-                    Civic Engagement Platform
+                    Smart City Platform
                   </span>
                 </div>
               </Link>
@@ -164,7 +164,7 @@ export default function MenuBar() {
               <div className="bg-gradient-to-br from-yellow-400 to-orange-500 p-2 rounded-lg">
                 <Lightbulb className="w-5 h-5 text-blue-900" />
               </div>
-              <span className="font-bold text-lg">People's Voice</span>
+              <span className="font-bold text-lg">CivicConnect</span>
             </div>
             <Button
               variant="ghost"

@@ -1,5 +1,5 @@
 
-# Civic Management & Reporting System
+# CivicConnect - Smart City Platform
 
 An AI-powered platform for civic issue reporting and management with tech dashboard and analytics.
 

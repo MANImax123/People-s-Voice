@@ -8,9 +8,9 @@ import ConditionalNavigation from '@/components/conditional-navigation';
 import ConditionalMain from '@/components/conditional-main';
 
 export const metadata: Metadata = {
-  title: 'People\'s Voice - Civic Engagement Platform',
+  title: 'CivicConnect - Smart City Platform',
   description: 'Report civic issues, engage with your community, and make your voice heard. A comprehensive platform for citizen participation in local governance.',
-  keywords: ['civic engagement', 'community issues', 'local government', 'citizen participation'],
+  keywords: ['civic engagement', 'community issues', 'local government', 'citizen participation', 'smart city'],
 };
 
 export default function RootLayout({

@@ -16,10 +16,10 @@ export default function Footer() {
               </div>
               <div className="flex flex-col">
                 <span className="font-bold text-xl bg-gradient-to-r from-white to-blue-100 bg-clip-text text-transparent">
-                  People's Voice
+                  CivicConnect
                 </span>
                 <span className="text-sm text-blue-200">
-                  Civic Engagement Platform
+                  Smart City Platform
                 </span>
               </div>
             </div>
@@ -92,7 +92,7 @@ export default function Footer() {
         {/* Bottom Bar */}
         <div className="border-t border-blue-700 mt-8 pt-8 flex flex-col md:flex-row justify-between items-center">
           <div className="text-blue-200 text-sm mb-4 md:mb-0">
-            © 2025 People's Voice. All rights reserved. Built with ❤️ for the community.
+            © 2025 CivicConnect. All rights reserved. Built with ❤️ for the community.
           </div>
           <div className="flex space-x-6 text-sm">
             <Link href="/privacy" className="text-blue-200 hover:text-white transition-colors duration-200">
