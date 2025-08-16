@@ -1,6 +1,9 @@
 # Production Deployment Guide
 
-## Vercel Deployment Setup
+## Vercel Deployment Setup (FIXED)
+
+### ⚠️ Important: Simplified Configuration
+The `vercel.json` has been simplified to avoid conflicts with Next.js auto-detection.
 
 ### 1. Environment Variables for Production
 Add these in Vercel Dashboard → Project Settings → Environment Variables:
@@ -33,7 +36,11 @@ NODE_ENV=production
 PAYMENT_MODE=production
 ```
 
-### 2. Stable Domain Setup
+### 2. Fixed Configuration Issues
+✅ **Removed conflicting properties**: No `builds` + `functions` conflict  
+✅ **Removed routes**: Let Next.js handle routing automatically  
+✅ **Simplified vercel.json**: Only essential configuration  
+✅ **Correct function paths**: `src/app/api/**/*.ts` pattern  
 
 #### Option A: Use Vercel Pro (Custom Domain)
 1. Purchase domain from any provider
