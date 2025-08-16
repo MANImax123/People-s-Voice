@@ -86,14 +86,28 @@ const GoogleMapsPicker: React.FC<GoogleMapsPickerProps> = ({
         mapTypeControl: true,
         streetViewControl: true,
         fullscreenControl: true,
+        mapId: 'DEMO_MAP_ID', // Required for AdvancedMarkerElement
       });
 
-      const markerInstance = new window.google.maps.Marker({
-        position: initialLocation,
-        map: mapInstance,
-        draggable: true,
-        title: 'Select location for your issue report'
-      });
+      // Use AdvancedMarkerElement instead of deprecated Marker
+      let markerInstance;
+      if (window.google.maps.marker && window.google.maps.marker.AdvancedMarkerElement) {
+        // Use new AdvancedMarkerElement
+        markerInstance = new window.google.maps.marker.AdvancedMarkerElement({
+          position: initialLocation,
+          map: mapInstance,
+          gmpDraggable: true,
+          title: 'Select location for your issue report'
+        });
+      } else {
+        // Fallback to legacy Marker if AdvancedMarkerElement not available
+        markerInstance = new window.google.maps.Marker({
+          position: initialLocation,
+          map: mapInstance,
+          draggable: true,
+          title: 'Select location for your issue report'
+        });
+      }
 
       const geocoderInstance = new window.google.maps.Geocoder();
 
@@ -107,22 +121,42 @@ const GoogleMapsPicker: React.FC<GoogleMapsPickerProps> = ({
           lng: event.latLng.lng()
         };
         
-        markerInstance.setPosition(clickedLocation);
+        // Set position differently for AdvancedMarkerElement vs legacy Marker
+        if (window.google.maps.marker && markerInstance instanceof window.google.maps.marker.AdvancedMarkerElement) {
+          markerInstance.position = clickedLocation;
+        } else {
+          markerInstance.setPosition(clickedLocation);
+        }
         setSelectedLocation(clickedLocation);
         reverseGeocode(clickedLocation, geocoderInstance);
       });
       listeners.push(clickListener);
 
-      // Handle marker drag
-      const dragListener = markerInstance.addListener('dragend', (event: any) => {
-        const draggedLocation = {
-          lat: event.latLng.lat(),
-          lng: event.latLng.lng()
-        };
-        
-        setSelectedLocation(draggedLocation);
-        reverseGeocode(draggedLocation, geocoderInstance);
-      });
+      // Handle marker drag - different for AdvancedMarkerElement
+      let dragListener;
+      if (window.google.maps.marker && window.google.maps.marker.AdvancedMarkerElement && markerInstance instanceof window.google.maps.marker.AdvancedMarkerElement) {
+        // AdvancedMarkerElement uses 'gmp-click' and different drag events
+        dragListener = markerInstance.addListener('dragend', (event: any) => {
+          const draggedLocation = {
+            lat: event.latLng.lat(),
+            lng: event.latLng.lng()
+          };
+          
+          setSelectedLocation(draggedLocation);
+          reverseGeocode(draggedLocation, geocoderInstance);
+        });
+      } else {
+        // Legacy Marker drag event
+        dragListener = markerInstance.addListener('dragend', (event: any) => {
+          const draggedLocation = {
+            lat: event.latLng.lat(),
+            lng: event.latLng.lng()
+          };
+          
+          setSelectedLocation(draggedLocation);
+          reverseGeocode(draggedLocation, geocoderInstance);
+        });
+      }
       listeners.push(dragListener);
 
       // Store listeners in state for cleanup
@@ -138,7 +172,12 @@ const GoogleMapsPicker: React.FC<GoogleMapsPickerProps> = ({
             };
             
             mapInstance.setCenter(currentLocation);
-            markerInstance.setPosition(currentLocation);
+            // Set position differently for AdvancedMarkerElement vs legacy Marker
+            if (window.google.maps.marker && markerInstance instanceof window.google.maps.marker.AdvancedMarkerElement) {
+              markerInstance.position = currentLocation;
+            } else {
+              markerInstance.setPosition(currentLocation);
+            }
             setSelectedLocation(currentLocation);
             reverseGeocode(currentLocation, geocoderInstance);
           },
@@ -197,7 +236,12 @@ const GoogleMapsPicker: React.FC<GoogleMapsPickerProps> = ({
         
         map.setCenter(location);
         map.setZoom(15);
-        marker.setPosition(location);
+        // Set position differently for AdvancedMarkerElement vs legacy Marker
+        if (window.google.maps.marker && marker instanceof window.google.maps.marker.AdvancedMarkerElement) {
+          marker.position = location;
+        } else {
+          marker.setPosition(location);
+        }
         setSelectedLocation(location);
         setSelectedAddress(results[0].formatted_address);
       }
@@ -318,7 +362,12 @@ const GoogleMapsPicker: React.FC<GoogleMapsPickerProps> = ({
                   if (map && marker) {
                     map.setCenter(currentLocation);
                     map.setZoom(16);
-                    marker.setPosition(currentLocation);
+                    // Set position differently for AdvancedMarkerElement vs legacy Marker
+                    if (window.google.maps.marker && marker instanceof window.google.maps.marker.AdvancedMarkerElement) {
+                      marker.position = currentLocation;
+                    } else {
+                      marker.setPosition(currentLocation);
+                    }
                     setSelectedLocation(currentLocation);
                     reverseGeocode(currentLocation, geocoder);
                   }
